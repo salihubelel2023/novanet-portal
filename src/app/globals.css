@@ -1,0 +1,151 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* ── Light theme ──────────────────────────────────────────────
+       Crisp, trustworthy, utility-grade — this is the register a
+       first-time visitor or a resident paying a bill should land in. */
+    --background: 40 20% 98%;
+    --foreground: 210 14% 10%;
+
+    --surface: 0 0% 100%;
+    --surface-2: 40 14% 95%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 210 14% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 14% 10%;
+
+    --primary: 156 72% 34%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 16% 95%;
+    --secondary-foreground: 210 14% 15%;
+
+    --muted: 210 16% 95%;
+    --muted-foreground: 210 9% 42%;
+    --accent: 210 16% 93%;
+    --accent-foreground: 210 14% 15%;
+
+    --destructive: 350 78% 47%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 14% 88%;
+    --input: 210 14% 88%;
+    --ring: 156 72% 34%;
+
+    /* Brand semantics */
+    --signal: 156 72% 34%;
+    --signal-strong: 156 76% 27%;
+    --signal-foreground: 0 0% 100%;
+    --fiber: 32 92% 48%;
+    --fiber-foreground: 30 40% 12%;
+    --sky: 199 89% 42%;
+    --sky-foreground: 0 0% 100%;
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    /* ── Dark theme (product default) ────────────────────────────
+       Cool charcoal-navy, not flat black — reads as a network
+       operations console rather than a generic dark template. */
+    --background: 216 24% 5%;
+    --foreground: 150 8% 96%;
+
+    --surface: 216 22% 7%;
+    --surface-2: 216 20% 10%;
+
+    --card: 216 20% 9%;
+    --card-foreground: 150 8% 96%;
+    --popover: 216 22% 8%;
+    --popover-foreground: 150 8% 96%;
+
+    --primary: 156 64% 46%;
+    --primary-foreground: 216 30% 6%;
+    --secondary: 216 16% 15%;
+    --secondary-foreground: 150 8% 92%;
+
+    --muted: 216 16% 14%;
+    --muted-foreground: 214 10% 62%;
+    --accent: 216 16% 16%;
+    --accent-foreground: 150 8% 92%;
+
+    --destructive: 350 74% 56%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 216 15% 18%;
+    --input: 216 15% 18%;
+    --ring: 156 64% 46%;
+
+    --signal: 156 64% 46%;
+    --signal-strong: 156 68% 38%;
+    --signal-foreground: 216 30% 6%;
+    --fiber: 36 92% 58%;
+    --fiber-foreground: 30 40% 10%;
+    --sky: 199 92% 60%;
+    --sky-foreground: 216 30% 6%;
+
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  ::selection {
+    @apply bg-signal/25 text-foreground;
+  }
+
+  /* Visible keyboard focus everywhere — never suppressed. */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Slim, quiet scrollbars that still fit the theme. */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 999px;
+    border: 2px solid hsl(var(--background));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground;
+  }
+
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-6;
+  }
+}

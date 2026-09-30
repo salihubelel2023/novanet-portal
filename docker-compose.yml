@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: novanet
+      POSTGRES_PASSWORD: novanet
+      POSTGRES_DB: novanet_portal
+    ports:
+      - "5432:5432"
+    volumes:
+      - novanet_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U novanet"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      # Overrides .env so the app always finds the compose-network db,
+      # regardless of what DATABASE_URL is set to locally.
+      DATABASE_URL: postgresql://novanet:novanet@db:5432/novanet_portal?schema=public
+
+volumes:
+  novanet_db_data:

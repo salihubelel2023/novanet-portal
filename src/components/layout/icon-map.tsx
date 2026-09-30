@@ -1,0 +1,30 @@
+import {
+  LayoutDashboard,
+  Repeat,
+  Ticket,
+  Receipt,
+  Wrench,
+  Radio,
+  LifeBuoy,
+  BarChart3,
+  Users,
+  LayoutGrid,
+  Settings,
+  Bell,
+  type LucideIcon,
+} from "lucide-react";
+
+export const ICON_MAP: Record<string, LucideIcon> = {
+  LayoutDashboard,
+  Repeat,
+  Ticket,
+  Receipt,
+  Wrench,
+  Radio,
+  LifeBuoy,
+  BarChart3,
+  Users,
+  LayoutGrid,
+  Settings,
+  Bell,
+};

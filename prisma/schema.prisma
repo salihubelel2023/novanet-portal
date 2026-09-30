@@ -1,0 +1,468 @@
+// NovaNet Portal — Prisma schema
+// Covers: multi-role auth, subscriptions & plans, Paystack/Flutterwave
+// payments, invoices, hotspot vouchers, support ticketing, notifications,
+// network devices (MikroTik/Starlink) and technician job dispatch.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ───────────────────────────── Enums ─────────────────────────────
+
+enum Role {
+  ADMIN
+  TECHNICIAN
+  RESIDENT
+  BUSINESS
+  HOTSPOT_USER
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  PENDING
+}
+
+enum PlanType {
+  RESIDENTIAL
+  BUSINESS
+  HOTSPOT
+}
+
+enum BillingCycle {
+  HOURLY
+  DAILY
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  ANNUALLY
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PENDING
+  EXPIRED
+  CANCELLED
+  SUSPENDED
+}
+
+enum PaymentProvider {
+  PAYSTACK
+  FLUTTERWAVE
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  ABANDONED
+}
+
+enum PaymentPurpose {
+  SUBSCRIPTION
+  VOUCHER
+}
+
+enum InvoiceStatus {
+  PAID
+  UNPAID
+  OVERDUE
+  CANCELLED
+}
+
+enum VoucherStatus {
+  UNUSED
+  ACTIVE
+  USED
+  EXPIRED
+  DISABLED
+}
+
+enum TicketCategory {
+  BILLING
+  TECHNICAL
+  INSTALLATION
+  NETWORK
+  ACCOUNT
+  OTHER
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum NotificationType {
+  INFO
+  SUCCESS
+  WARNING
+  ERROR
+  PAYMENT
+  TICKET
+  SUBSCRIPTION
+  VOUCHER
+}
+
+enum DeviceType {
+  MIKROTIK_ROUTER
+  STARLINK_DISH
+  SWITCH
+  ACCESS_POINT
+  ONT
+}
+
+enum DeviceStatus {
+  ONLINE
+  OFFLINE
+  DEGRADED
+  UNKNOWN
+}
+
+enum JobType {
+  INSTALLATION
+  REPAIR
+  MAINTENANCE
+  INSPECTION
+}
+
+enum JobStatus {
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+// ───────────────────────────── Models ─────────────────────────────
+
+model Estate {
+  id        String   @id @default(cuid())
+  name      String
+  address   String
+  city      String
+  state     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users   User[]
+  devices NetworkDevice[]
+  jobs    TechnicianJob[]
+
+  @@map("estates")
+}
+
+model User {
+  id           String     @id @default(cuid())
+  name         String
+  email        String     @unique
+  phone        String?    @unique
+  passwordHash String
+  role         Role       @default(RESIDENT)
+  status       UserStatus @default(ACTIVE)
+  image        String?
+
+  address      String?
+  businessName String?
+  estateId     String?
+  estate       Estate?    @relation(fields: [estateId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subscriptions     Subscription[]
+  payments          Payment[]
+  invoices          Invoice[]
+  notifications     Notification[]
+  tickets           SupportTicket[]  @relation("TicketCreator")
+  assignedTickets   SupportTicket[]  @relation("TicketAssignee")
+  ticketMessages    TicketMessage[]
+  generatedVouchers HotspotVoucher[] @relation("VoucherGenerator")
+  redeemedVouchers  HotspotVoucher[] @relation("VoucherRedeemer")
+  voucherBatches    VoucherBatch[]
+  technicianJobs    TechnicianJob[]  @relation("JobTechnician")
+  customerJobs      TechnicianJob[]  @relation("JobCustomer")
+  auditLogs         AuditLog[]
+
+  @@index([role])
+  @@index([estateId])
+  @@map("users")
+}
+
+model Plan {
+  id            String       @id @default(cuid())
+  name          String
+  description   String
+  type          PlanType
+  price         Decimal      @db.Decimal(12, 2)
+  currency      String       @default("NGN")
+  billingCycle  BillingCycle
+  dataCapGB     Int? // null = unlimited
+  speedMbps     Int
+  deviceLimit   Int? // max simultaneous devices on the customer's access point; null = unrestricted
+  durationHours Int? // HOTSPOT plans only: exact voucher validity window (e.g. 3 for a "3-hour pass"); falls back to billingCycle-based duration when unset
+  features      String[]
+  isActive      Boolean      @default(true)
+  isPopular     Boolean      @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subscriptions Subscription[]
+  vouchers      HotspotVoucher[]
+
+  @@index([type, isActive])
+  @@map("plans")
+}
+
+model Subscription {
+  id        String             @id @default(cuid())
+  userId    String
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planId    String
+  plan      Plan               @relation(fields: [planId], references: [id])
+  status    SubscriptionStatus @default(PENDING)
+  startDate DateTime?
+  endDate   DateTime?
+  autoRenew Boolean            @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  payments Payment[]
+  invoices Invoice[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("subscriptions")
+}
+
+model Payment {
+  id                String          @id @default(cuid())
+  reference         String          @unique
+  providerReference String?
+  userId            String
+  user              User            @relation(fields: [userId], references: [id])
+  subscriptionId    String?
+  subscription      Subscription?   @relation(fields: [subscriptionId], references: [id])
+  amount            Decimal         @db.Decimal(12, 2)
+  currency          String          @default("NGN")
+  provider          PaymentProvider
+  purpose           PaymentPurpose
+  status            PaymentStatus   @default(PENDING)
+  channel           String?
+  paidAt            DateTime?
+  metadata          Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  invoice Invoice?
+  voucher HotspotVoucher?
+
+  @@index([userId])
+  @@index([status])
+  @@map("payments")
+}
+
+model Invoice {
+  id             String        @id @default(cuid())
+  invoiceNumber  String        @unique
+  userId         String
+  user           User          @relation(fields: [userId], references: [id])
+  subscriptionId String?
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
+  paymentId      String?       @unique
+  payment        Payment?      @relation(fields: [paymentId], references: [id])
+  amount         Decimal       @db.Decimal(12, 2)
+  tax            Decimal       @default(0) @db.Decimal(12, 2)
+  total          Decimal       @db.Decimal(12, 2)
+  status         InvoiceStatus @default(UNPAID)
+  description    String
+  dueDate        DateTime
+  issuedAt       DateTime      @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@map("invoices")
+}
+
+model VoucherBatch {
+  id            String   @id @default(cuid())
+  name          String
+  quantity      Int
+  planId        String
+  generatedById String
+  generatedBy   User     @relation(fields: [generatedById], references: [id])
+  createdAt     DateTime @default(now())
+
+  vouchers HotspotVoucher[]
+
+  @@map("voucher_batches")
+}
+
+model HotspotVoucher {
+  id            String        @id @default(cuid())
+  code          String        @unique
+  batchId       String?
+  batch         VoucherBatch? @relation(fields: [batchId], references: [id])
+  planId        String
+  plan          Plan          @relation(fields: [planId], references: [id])
+  status        VoucherStatus @default(UNUSED)
+  durationHours Int
+  dataCapMB     Int?
+  price         Decimal       @db.Decimal(12, 2)
+
+  generatedById String?
+  generatedBy   User?   @relation("VoucherGenerator", fields: [generatedById], references: [id])
+  redeemedById  String?
+  redeemedBy    User?   @relation("VoucherRedeemer", fields: [redeemedById], references: [id])
+
+  // Set when purchased online (self-service) rather than issued from a
+  // printed/offline batch.
+  paymentId String?  @unique
+  payment   Payment? @relation(fields: [paymentId], references: [id])
+
+  // Captured from the captive-portal redemption request; used to scope
+  // the MikroTik hotspot user/binding to a specific device.
+  deviceMac String?
+
+  redeemedAt  DateTime?
+  activatedAt DateTime?
+  expiresAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@map("hotspot_vouchers")
+}
+
+model SupportTicket {
+  id           String         @id @default(cuid())
+  ticketNumber String         @unique
+  userId       String
+  user         User           @relation("TicketCreator", fields: [userId], references: [id])
+  subject      String
+  description  String
+  category     TicketCategory
+  priority     TicketPriority @default(MEDIUM)
+  status       TicketStatus   @default(OPEN)
+  assignedToId String?
+  assignedTo   User?          @relation("TicketAssignee", fields: [assignedToId], references: [id])
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  resolvedAt DateTime?
+
+  messages TicketMessage[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([assignedToId])
+  @@map("support_tickets")
+}
+
+model TicketMessage {
+  id       String        @id @default(cuid())
+  ticketId String
+  ticket   SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  senderId String
+  sender   User          @relation(fields: [senderId], references: [id])
+  message  String
+
+  createdAt DateTime @default(now())
+
+  @@index([ticketId])
+  @@map("ticket_messages")
+}
+
+model Notification {
+  id      String           @id @default(cuid())
+  userId  String
+  user    User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title   String
+  message String
+  type    NotificationType @default(INFO)
+  isRead  Boolean          @default(false)
+  link    String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
+
+model NetworkDevice {
+  id         String       @id @default(cuid())
+  name       String
+  type       DeviceType
+  location   String?
+  ipAddress  String?
+  estateId   String?
+  estate     Estate?      @relation(fields: [estateId], references: [id])
+  status     DeviceStatus @default(UNKNOWN)
+  lastSeenAt DateTime?
+  metadata   Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  jobs TechnicianJob[]
+
+  @@index([type, status])
+  @@map("network_devices")
+}
+
+model TechnicianJob {
+  id           String    @id @default(cuid())
+  jobNumber    String    @unique
+  type         JobType
+  status       JobStatus @default(ASSIGNED)
+  technicianId String
+  technician   User      @relation("JobTechnician", fields: [technicianId], references: [id])
+  userId       String?
+  customer     User?     @relation("JobCustomer", fields: [userId], references: [id])
+  deviceId     String?
+  device       NetworkDevice? @relation(fields: [deviceId], references: [id])
+  estateId     String?
+  estate       Estate?   @relation(fields: [estateId], references: [id])
+  notes        String?
+  scheduledAt  DateTime?
+  completedAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([technicianId, status])
+  @@map("technician_jobs")
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  action     String
+  entityType String
+  entityId   String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@map("audit_logs")
+}
