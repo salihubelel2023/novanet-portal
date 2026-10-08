@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
+import NextAuth from "next-auth";
+import { authConfig } from "@/auth.config";
 import type { Role } from "@prisma/client";
+
+// Middleware builds its own auth from the edge-safe config. It must never
+// import "@/auth", because that pulls in prisma and pg, which break on the Edge.
+const { auth } = NextAuth(authConfig);
 
 // Paths under /dashboard that are further restricted beyond "any signed-in
 // user". Kept in sync with the nav config in components/layout/nav-config.

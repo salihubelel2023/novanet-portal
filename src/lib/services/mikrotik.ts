@@ -38,6 +38,14 @@ function loadConfig(): MikrotikConfig | null {
   const host = process.env.MIKROTIK_HOST;
   const username = process.env.MIKROTIK_USERNAME;
   const password = process.env.MIKROTIK_PASSWORD;
+
+  console.log("[mikrotik cfg]", {
+    host,
+    username,
+    passwordLength: password?.length,
+    useSsl: process.env.MIKROTIK_USE_SSL,
+  });
+
   if (!host || !username || !password) return null;
   return {
     host,

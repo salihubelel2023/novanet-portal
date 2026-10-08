@@ -39,15 +39,30 @@ export function RegisterForm() {
 
   async function onSubmit(values: RegisterInput) {
     setServerError(null);
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
-    });
-    const json = await res.json();
+    let res: Response;
+    try {
+      res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+    } catch {
+      setServerError("Could not reach the server. Check your connection and try again.");
+      return;
+    }
+
+    // The server may return HTML or an empty body if the route crashes,
+    // so parse defensively instead of calling res.json() directly.
+    const text = await res.text();
+    let json: { error?: string } = {};
+    try {
+      json = text ? JSON.parse(text) : {};
+    } catch {
+      console.error("Register returned non-JSON response:", res.status, text.slice(0, 300));
+    }
 
     if (!res.ok) {
-      setServerError(json.error ?? "Something went wrong. Please try again.");
+      setServerError(json.error ?? `Registration failed (status ${res.status}). Please try again.`);
       return;
     }
 

@@ -2,8 +2,8 @@ import NextAuth, { type User as AuthUser } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
-import type { Role, UserStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { authConfig } from "@/auth.config";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -11,15 +11,7 @@ const credentialsSchema = z.object({
 });
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  // JWT sessions are required here because the Credentials provider has no
-  // OAuth handshake for the database-adapter flow to hook into. If Google/
-  // GitHub OAuth providers are added later, an @auth/prisma-adapter can be
-  // layered in alongside this without changing the schema.
-  session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60 },
-  pages: {
-    signIn: "/login",
-    error: "/login",
-  },
+  ...authConfig,
   providers: [
     Credentials({
       name: "Email and password",
@@ -55,22 +47,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
-  callbacks: {
-    async jwt({ token, user }) {
-      // `user` is only populated on the initial sign-in; persist the bits
-      // we need into the token so subsequent requests don't hit the DB.
-      if (user) {
-        token.id = user.id as string;
-        token.role = user.role;
-        token.status = user.status;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      session.user.id = token.id as string;
-      session.user.role = token.role as Role;
-      session.user.status = token.status as UserStatus;
-      return session;
-    },
-  },
 });

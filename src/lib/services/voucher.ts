@@ -2,7 +2,10 @@ import "server-only";
 import { prisma } from "@/lib/prisma";
 import { generateVoucherCode } from "@/lib/utils";
 import { getMikrotikClient } from "@/lib/services/mikrotik";
+import { redeemVoucherRecord, type VoucherStore } from "@/lib/services/voucher-redeem";
 import type { Plan } from "@prisma/client";
+
+export { VoucherRedemptionError } from "@/lib/services/voucher-redeem";
 
 /** Billing-cycle → hours, used to translate a hotspot Plan into a voucher duration. */
 const CYCLE_TO_HOURS: Record<string, number> = {
@@ -62,7 +65,32 @@ export async function generateVoucherBatch(params: {
   });
 }
 
-export class VoucherRedemptionError extends Error {}
+const prismaVoucherStore: VoucherStore<
+  Awaited<ReturnType<typeof prisma.hotspotVoucher.findUniqueOrThrow>> & { plan: { name: string } }
+> = {
+  async findByCode(code) {
+    return prisma.hotspotVoucher.findUnique({
+      where: { code },
+      include: { plan: true },
+    });
+  },
+  async claimUnused(id, data) {
+    // Conditional update is the lock: two concurrent redeems of the same
+    // UNUSED code cannot both succeed, which the previous find-then-update
+    // path allowed.
+    const result = await prisma.hotspotVoucher.updateMany({
+      where: { id, status: "UNUSED" },
+      data: { ...data, status: "ACTIVE" },
+    });
+    return result.count === 1;
+  },
+  getById(id) {
+    return prisma.hotspotVoucher.findUniqueOrThrow({
+      where: { id },
+      include: { plan: true },
+    });
+  },
+};
 
 /**
  * Redeem a voucher code: mark it active, set its expiry window, and
@@ -76,43 +104,16 @@ export async function redeemVoucher(params: {
   userId?: string;
   deviceMac?: string;
 }) {
-  const voucher = await prisma.hotspotVoucher.findUnique({
-    where: { code: params.code },
-    include: { plan: true },
-  });
-
-  if (!voucher) throw new VoucherRedemptionError("That voucher code was not found.");
-  if (voucher.status === "USED" || voucher.status === "ACTIVE") {
-    throw new VoucherRedemptionError("This voucher has already been redeemed.");
-  }
-  if (voucher.status === "EXPIRED" || voucher.status === "DISABLED") {
-    throw new VoucherRedemptionError("This voucher is no longer valid.");
-  }
-
-  const now = new Date();
-  const expiresAt = new Date(now.getTime() + voucher.durationHours * 60 * 60 * 1000);
-
-  const updated = await prisma.hotspotVoucher.update({
-    where: { id: voucher.id },
-    data: {
-      status: "ACTIVE",
-      redeemedById: params.userId,
-      redeemedAt: now,
-      activatedAt: now,
-      expiresAt,
-      deviceMac: params.deviceMac,
-    },
-    include: { plan: true },
-  });
+  const updated = await redeemVoucherRecord(prismaVoucherStore, params);
 
   const mikrotik = getMikrotikClient();
   if (mikrotik) {
     try {
       await mikrotik.createHotspotUser({
-        name: voucher.code,
-        password: voucher.code,
-        limitUptime: `${voucher.durationHours}h`,
-        comment: `Voucher ${voucher.code} — ${voucher.plan.name}`,
+        name: updated.code,
+        password: updated.code,
+        limitUptime: `${updated.durationHours}h`,
+        comment: `Voucher ${updated.code} — ${updated.plan.name}`,
       });
     } catch (err) {
       // Non-fatal: the voucher redemption itself already succeeded.
