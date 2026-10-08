@@ -1,5 +1,6 @@
+import Link from "next/link";
 import type { Metadata } from "next";
-import { Wifi, Gauge, Database } from "lucide-react";
+import { Wifi, Gauge, Database, MapPin } from "lucide-react";
 import { requireRole, ROLE_GROUPS } from "@/lib/rbac";
 import { prisma } from "@/lib/prisma";
 import { PageHeader, EmptyState } from "@/components/dashboard/page-header";
@@ -9,23 +10,46 @@ import { Check } from "lucide-react";
 import { formatCurrency, formatDate, cn } from "@/lib/utils";
 import { SubscribeButton } from "@/components/forms/subscribe-button";
 import { AutoRenewToggle, CancelSubscriptionButton } from "@/components/forms/subscription-actions";
+import { ABUJA_DISTRICTS } from "@/lib/constants";
 
 export const metadata: Metadata = { title: "Subscription" };
 
-export default async function SubscriptionsPage() {
+export default async function SubscriptionsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ district?: string }>;
+}) {
+  const resolvedParams = searchParams ? await searchParams : {};
   const user = await requireRole(ROLE_GROUPS.CUSTOMERS);
 
-  const [activeSubscription, plans] = await Promise.all([
+  const [activeSubscription, dbUser, allPlans] = await Promise.all([
     prisma.subscription.findFirst({
       where: { userId: user.id, status: { in: ["ACTIVE", "PENDING", "EXPIRED"] } },
       include: { plan: true },
       orderBy: { createdAt: "desc" },
+    }),
+    prisma.user.findUnique({
+      where: { id: user.id },
+      select: {
+        district: true,
+        address: true,
+        estate: { select: { name: true, district: true } },
+      },
     }),
     prisma.plan.findMany({
       where: { type: user.role === "BUSINESS" ? "BUSINESS" : "RESIDENTIAL", isActive: true },
       orderBy: { price: "asc" },
     }),
   ]);
+
+  const userDistrict = dbUser?.district || dbUser?.estate?.district || null;
+  const activeDistrictFilter = resolvedParams.district ?? userDistrict ?? "ALL";
+
+  const plans = activeDistrictFilter === "ALL"
+    ? allPlans
+    : allPlans.filter((p) => !p.district || p.district === activeDistrictFilter);
+
+  const currentDistrictInfo = ABUJA_DISTRICTS.find((d) => d.id === userDistrict);
 
   return (
     <div>
@@ -111,20 +135,99 @@ export default async function SubscriptionsPage() {
       </Card>
 
       <div className="mt-10">
-        <h2 className="font-display text-lg font-semibold">
-          {activeSubscription ? "Change plan" : "Available plans"}
-        </h2>
-        <div className="mt-4 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="font-display text-lg font-semibold">
+              {activeSubscription ? "Change plan" : "Available plans"}
+            </h2>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Pricing and bandwidth tiers tailored to your Abuja district.
+            </p>
+          </div>
+
+          {currentDistrictInfo && (
+            <div className="flex items-center gap-1.5 self-start rounded-full border border-signal/20 bg-signal/10 px-3 py-1 text-xs text-signal sm:self-auto">
+              <MapPin className="h-3.5 w-3.5" />
+              <span>Your location: <strong>{currentDistrictInfo.shortName}</strong></span>
+            </div>
+          )}
+        </div>
+
+        {/* District Filter Switcher */}
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Link
+            href="/dashboard/subscriptions?district=ALL"
+            className={cn(
+              "rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors",
+              activeDistrictFilter === "ALL"
+                ? "border-signal bg-signal text-signal-foreground"
+                : "border-border text-muted-foreground hover:bg-surface-2"
+            )}
+          >
+            All Abuja Districts
+          </Link>
+          {ABUJA_DISTRICTS.map((d) => {
+            const isSelected = activeDistrictFilter === d.id;
+            const isUserDistrict = userDistrict === d.id;
+            return (
+              <Link
+                key={d.id}
+                href={`/dashboard/subscriptions?district=${d.id}`}
+                className={cn(
+                  "flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors",
+                  isSelected
+                    ? "border-signal bg-signal text-signal-foreground"
+                    : "border-border text-muted-foreground hover:bg-surface-2"
+                )}
+              >
+                <span>{d.shortName}</span>
+                {isUserDistrict && (
+                  <span
+                    className={cn(
+                      "rounded-full px-1.5 py-0.5 text-[10px]",
+                      isSelected ? "bg-white/20 text-white" : "bg-signal/15 font-semibold text-signal"
+                    )}
+                  >
+                    Your area
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </div>
+
+        <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {plans.map((plan) => {
             const isCurrent = activeSubscription?.planId === plan.id && activeSubscription.status === "ACTIVE";
+            const districtMeta = ABUJA_DISTRICTS.find((d) => d.id === plan.district);
+            const matchesUserLocation = userDistrict && plan.district === userDistrict;
+
             return (
               <div
                 key={plan.id}
                 className={cn(
                   "relative flex flex-col rounded-2xl border p-6",
-                  plan.isPopular ? "border-signal shadow-glow" : "border-border"
+                  matchesUserLocation
+                    ? "border-signal/80 bg-signal/[0.02] shadow-sm"
+                    : plan.isPopular
+                      ? "border-signal shadow-glow"
+                      : "border-border"
                 )}
               >
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  {districtMeta ? (
+                    <span className="flex items-center gap-1 text-[11px] font-medium text-signal">
+                      <MapPin className="h-3 w-3" />
+                      {districtMeta.shortName}
+                    </span>
+                  ) : <span />}
+                  {matchesUserLocation && (
+                    <span className="rounded-full bg-signal/15 px-2 py-0.5 text-[10px] font-semibold text-signal">
+                      Matches your location
+                    </span>
+                  )}
+                </div>
+
                 {plan.isPopular && (
                   <span className="absolute -top-3 left-6 rounded-full bg-signal px-3 py-1 text-xs font-semibold text-signal-foreground">
                     Most popular

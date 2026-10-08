@@ -23,6 +23,7 @@ export const registerSchema = z
     password: basePassword,
     confirmPassword: z.string(),
     businessName: z.string().optional(),
+    district: z.string().optional(),
     address: z.string().optional(),
     estateId: z.string().optional(),
   })

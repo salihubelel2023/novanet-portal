@@ -53,3 +53,32 @@ export const NIGERIAN_STATES = [
 ] as const;
 
 export const DEFAULT_PAGE_SIZE = 20;
+
+export const ABUJA_DISTRICTS = [
+  {
+    id: "DIPLOMATIC",
+    name: "Premium Diplomatic & Luxury",
+    shortName: "Diplomatic & Luxury",
+    areas: "Maitama, Asokoro, Guzape, Katampe Extension",
+    residentPrice: 50000,
+    businessPrice: 100000,
+  },
+  {
+    id: "COMMERCIAL",
+    name: "Commercial Hubs & Plazas",
+    shortName: "Commercial Hubs",
+    areas: "Wuse II, Central Business District, Jabi, Utako",
+    residentPrice: 40000,
+    businessPrice: 75000,
+  },
+  {
+    id: "ESTATE",
+    name: "High-Growth Gated Estates",
+    shortName: "Gated Estates",
+    areas: "Mabushi, Lifecamp, Wuye, Katampe, Lugbe, Lokogama, Kyami",
+    residentPrice: 30000,
+    businessPrice: 60000,
+  },
+] as const;
+
+export type AbujaDistrictId = (typeof ABUJA_DISTRICTS)[number]["id"];

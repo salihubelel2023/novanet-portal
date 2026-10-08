@@ -153,6 +153,7 @@ model Estate {
   address   String
   city      String
   state     String
+  district  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -174,6 +175,7 @@ model User {
   image        String?
 
   address      String?
+  district     String?
   businessName String?
   estateId     String?
   estate       Estate?    @relation(fields: [estateId], references: [id])
@@ -215,6 +217,7 @@ model Plan {
   features      String[]
   isActive      Boolean      @default(true)
   isPopular     Boolean      @default(false)
+  district      String? // DIPLOMATIC, COMMERCIAL, ESTATE, or null for all
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -223,6 +226,7 @@ model Plan {
   vouchers      HotspotVoucher[]
 
   @@index([type, isActive])
+  @@index([district])
   @@map("plans")
 }
 

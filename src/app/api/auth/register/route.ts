@@ -36,6 +36,7 @@ export async function POST(req: Request) {
       passwordHash,
       role: data.accountType,
       businessName: data.accountType === "BUSINESS" ? data.businessName : undefined,
+      district: data.district || undefined,
       address: data.address,
       estateId: data.estateId || undefined,
     },

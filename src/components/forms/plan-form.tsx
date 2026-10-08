@@ -115,6 +115,21 @@ export function PlanForm() {
             </div>
           </div>
 
+          <div className="space-y-1.5">
+            <Label>District / Area (Abuja)</Label>
+            <Select onValueChange={(v) => setValue("district", v === "ALL" ? null : v)}>
+              <SelectTrigger>
+                <SelectValue placeholder="All districts (Universal)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">All districts (Universal)</SelectItem>
+                <SelectItem value="DIPLOMATIC">Diplomatic & Luxury (Maitama, Asokoro, Guzape)</SelectItem>
+                <SelectItem value="COMMERCIAL">Commercial Hubs (Wuse II, CBD, Jabi, Utako)</SelectItem>
+                <SelectItem value="ESTATE">Gated Estates (Mabushi, Lifecamp, Lugbe, Lokogama)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="grid grid-cols-3 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="price">Price (₦)</Label>

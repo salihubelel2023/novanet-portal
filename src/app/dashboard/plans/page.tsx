@@ -43,7 +43,14 @@ export default async function PlansPage() {
                 {plans.map((plan) => (
                   <TableRow key={plan.id}>
                     <TableCell>
-                      <p className="font-medium">{plan.name}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium">{plan.name}</p>
+                        {plan.district && (
+                          <Badge variant="secondary" className="text-[10px] font-mono">
+                            {plan.district}
+                          </Badge>
+                        )}
+                      </div>
                       <p className="text-xs text-muted-foreground">{plan.description}</p>
                     </TableCell>
                     <TableCell className="text-muted-foreground">{plan.type}</TableCell>

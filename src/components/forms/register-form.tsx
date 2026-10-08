@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/primitives";
 import { cn } from "@/lib/utils";
+import { ABUJA_DISTRICTS } from "@/lib/constants";
 
 const ACCOUNT_TYPES = [
   { value: "RESIDENT", label: "Resident", icon: Home, description: "Home internet" },
@@ -143,9 +144,26 @@ export function RegisterForm() {
         </div>
 
         {accountType !== "HOTSPOT_USER" && (
-          <div className="space-y-1.5">
-            <Label htmlFor="address">Address</Label>
-            <Input id="address" placeholder="12 Palm Avenue, Lekki" {...register("address")} />
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="district">Abuja District / Area</Label>
+              <select
+                id="district"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                {...register("district")}
+              >
+                <option value="">Select your area in Abuja...</option>
+                {ABUJA_DISTRICTS.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.shortName} — {d.areas}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="address">Street address</Label>
+              <Input id="address" placeholder="e.g. Plot 14, 4th Avenue, Gwarinpa" {...register("address")} />
+            </div>
           </div>
         )}
 
