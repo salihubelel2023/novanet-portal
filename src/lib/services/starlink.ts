@@ -2,7 +2,11 @@ import "server-only";
 import type { StarlinkTelemetrySnapshot } from "@/types";
 
 /**
- * Starlink network monitoring — PLACEHOLDER INTEGRATION.
+ * Starlink network monitoring — Secondary / Fallback Uplink Integration.
+ *
+ * In NovaNet's network architecture:
+ * - WAN 1 (Primary): Phase3 Telecom high-speed terrestrial metro fiber.
+ * - WAN 2 (Fallback): Starlink Enterprise satellite backhaul for automated failover.
  *
  * Starlink exposes a real Management API and Telemetry API, but both
  * require a Starlink Reseller/Enterprise account with an assigned account

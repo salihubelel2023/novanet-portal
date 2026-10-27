@@ -4,6 +4,7 @@ import type { Role, UserStatus } from "@prisma/client";
 // Edge-safe config: shared by middleware and by auth.ts.
 // Do NOT import prisma, bcrypt or anything that touches the database here.
 export const authConfig = {
+    trustHost: true,
     session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60 },
     pages: {
         signIn: "/login",

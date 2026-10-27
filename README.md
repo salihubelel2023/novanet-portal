@@ -1,19 +1,20 @@
 # NovaNet Portal
 
-A production-ready customer, technician and admin platform for a managed internet service provider in Nigeria — estate residents, businesses, pay-as-you-go hotspot users, field technicians and administrators all in one console.
+A production-ready customer, technician and admin platform for a managed internet service provider in Abuja, Nigeria — estate residents, businesses, pay-as-you-go hotspot users, field technicians and administrators all in one console.
 
-Built with Next.js 15 (App Router), TypeScript, Tailwind CSS, Prisma + PostgreSQL, and Auth.js (NextAuth v5). Integrates Paystack and Flutterwave for payments, a real MikroTik RouterOS REST API client, and a Starlink telemetry service that runs in simulated mode until real API credentials are supplied.
+Built with Next.js 15 (App Router), TypeScript, Tailwind CSS, Prisma 7 + PostgreSQL (Supabase-ready with `@prisma/adapter-pg`), and Auth.js (NextAuth v5). Features location-aware Abuja district pricing tiers, Paystack & Flutterwave payment processing, a MikroTik RouterOS REST API client, and Dual-WAN monitoring with Phase3 Telecom primary fiber and Starlink satellite fallback.
 
 ## Contents
 
 - [Features](#features)
+- [Abuja District Pricing Tiers](#abuja-district-pricing-tiers)
 - [Tech stack](#tech-stack)
 - [Getting started](#getting-started)
 - [Environment variables](#environment-variables)
 - [Database](#database)
 - [Payments](#payments)
 - [MikroTik integration](#mikrotik-integration)
-- [Starlink integration](#starlink-integration)
+- [Network & Uplink Architecture (Phase3 Telecom + Starlink)](#network--uplink-architecture-phase3-telecom--starlink)
 - [Deployment](#deployment)
 - [Project structure](#project-structure)
 - [Security notes](#security-notes)
@@ -23,19 +24,36 @@ Built with Next.js 15 (App Router), TypeScript, Tailwind CSS, Prisma + PostgreSQ
 ## Features
 
 - **Five roles**: Admin, Technician, Resident, Business, Hotspot user — each with its own dashboard and nav
-- **Subscriptions**: residential/business plans priced per access point + device limit, upgrade/switch/cancel/auto-renew
-- **Hotspot vouchers**: admin batch generation, self-service purchase, QR-code redemption, no-login public redeem page
-- **Payments**: Paystack and Flutterwave, both wired to real REST endpoints with signature-verified webhooks *and* a synchronous callback-page fallback (see [Payments](#payments))
+- **Location-aware plans**: Pricing and bandwidth tailored automatically to the customer's Abuja district (Diplomatic Luxury, Commercial Hubs, Gated Estates)
+- **Dual-WAN redundancy**: Phase3 Telecom high-speed metro fiber as primary connection with automatic Starlink satellite fallback
+- **Subscriptions**: residential & business fiber plans priced per district tier, with upgrade/switch/cancel/auto-renew
+- **Hotspot vouchers**: 3 speed-capped unlimited data voucher tiers (Daily 5 Mbps, Weekly 10 Mbps, Monthly 25 Mbps), batch generation, QR-code redemption, no-login public redeem page
+- **Payments**: Paystack and Flutterwave, wired to real REST endpoints with signature-verified webhooks *and* a synchronous callback-page fallback (see [Payments](#payments))
 - **Invoices**: auto-generated on successful subscription payment, printable
 - **Support ticketing**: categories, priorities, technician assignment, threaded replies
 - **Notifications**: in-app bell + full notifications page
-- **Network monitoring**: live MikroTik router health + active hotspot sessions with disconnect; Starlink dish telemetry
+- **Network monitoring**: live MikroTik router health + active hotspot sessions with disconnect; Phase3 Telecom gateway & Starlink dish fallback telemetry
 - **Analytics**: revenue trend, plan distribution, ticket status (Recharts)
 - **RBAC everywhere**: enforced at middleware, page, and API layers independently (see [Security notes](#security-notes))
 
+## Abuja District Pricing Tiers
+
+The portal implements localized pricing and QoS tiers across Abuja:
+
+| District Tier | Areas Covered | Resident Plan | Business Plan | Key Features |
+| :--- | :--- | :--- | :--- | :--- |
+| **Premium Diplomatic** | Maitama, Asokoro, Guzape, Katampe Ext | ₦50,000 / mo | ₦100,000 / mo | 100–200 Mbps burst, smart home QoS, static IP, 24/7 SLA |
+| **Commercial Hubs** | Wuse II, CBD, Jabi, Utako | ₦40,000 / mo | ₦75,000 / mo | 60–120 Mbps, dedicated retail/POS priority queues |
+| **Gated Estates** | Mabushi, Lifecamp, Wuye, Lugbe, Lokogama, Kyami | ₦30,000 / mo | ₦60,000 / mo | 35–75 Mbps mass-market family & SME fiber |
+
+**Hotspot Voucher Passes (Unlimited Data · Speed Capped):**
+* **Daily Pass:** ₦500 / 24 hrs (5 Mbps speed cap)
+* **Weekly Pass:** ₦2,500 / 7 days (10 Mbps speed cap)
+* **Monthly Pass:** ₦8,000 / 30 days (25 Mbps speed cap)
+
 ## Tech stack
 
-Next.js 15.5.10 · React 19.2.4 · TypeScript · Tailwind CSS 3 · Prisma 6 · PostgreSQL · Auth.js (NextAuth) v5 · Radix UI primitives · Recharts · Zod · React Hook Form
+Next.js 15.5.10 · React 19.2.4 · TypeScript · Tailwind CSS 3 · Prisma 7.10 (with `@prisma/adapter-pg` & `prisma.config.ts`) · PostgreSQL (Supabase) · Auth.js (NextAuth) v5 · Radix UI primitives · Recharts · Zod · React Hook Form
 
 ## Getting started
 
@@ -68,13 +86,15 @@ See `.env.example` for the full list with descriptions. At minimum for local dev
 
 ## Database
 
-Schema lives in `prisma/schema.prisma`. Key models: `User` (role-based), `Plan`, `Subscription`, `Payment`, `Invoice`, `HotspotVoucher` + `VoucherBatch`, `SupportTicket` + `TicketMessage`, `Notification`, `NetworkDevice`, `TechnicianJob`, `Estate`, `AuditLog`.
+Schema lives in `prisma/schema.prisma` and runtime database configuration in `prisma.config.ts` (Prisma 7). Key models: `User` (role-based, district-aware), `Plan` (district-tagged), `Subscription`, `Payment`, `Invoice`, `HotspotVoucher` + `VoucherBatch`, `SupportTicket` + `TicketMessage`, `Notification`, `NetworkDevice`, `TechnicianJob`, `Estate`, `AuditLog`.
 
 ```bash
+npx prisma generate                            # generate Prisma Client
+npx prisma db push                             # sync schema directly to Supabase / Postgres
 npx prisma migrate dev --name <description>   # create + apply a migration locally
 npx prisma migrate deploy                      # apply migrations in production
 npx prisma studio                               # browse data visually
-npm run db:seed                                 # re-seed demo data (destructive — wipes existing rows)
+npm run db:seed                                 # seed demo data with Abuja plans & demo users
 ```
 
 ## Payments
@@ -99,9 +119,13 @@ To receive real webhooks locally, tunnel with ngrok/Cloudflare Tunnel and point 
 
 If unreachable or unconfigured, the network page shows a clear "not configured" / "unreachable" state instead of crashing — this was written for a real router but has not been tested against physical hardware in this environment.
 
-## Starlink integration
+## Network & Uplink Architecture (Phase3 Telecom + Starlink)
 
-Starlink's Enterprise/Telemetry API requires a Reseller/Business account relationship that can't be provisioned here. `src/lib/services/starlink.ts` implements the documented shape of that integration (OAuth2 client-credentials token exchange, then authenticated telemetry calls) but **returns clearly-labeled simulated data** until `STARLINK_CLIENT_ID` / `STARLINK_CLIENT_SECRET` / `STARLINK_ACCOUNT_NUMBER` are set. The network page shows a "Simulated data" vs "Live data" badge so this is never ambiguous to an admin.
+NovaNet employs a carrier-grade **Dual-WAN multi-homing strategy** to guarantee uninterrupted connectivity across Abuja:
+
+- **Primary Uplink (WAN 1 — Phase3 Telecom Metro Fiber):** NovaNet's primary internet connectivity runs over Phase3 Telecom's high-capacity terrestrial GPON/Metro Ethernet infrastructure. It handles default egress traffic, delivering ultra-low latency (<15 ms) for Abuja business and residential subscribers.
+- **Fallback Uplink (WAN 2 — Starlink Enterprise Satellite):** Starlink operates as a secondary, automated standby failover link. In the event of terrestrial fiber cuts or upstream maintenance on Phase3 Telecom, MikroTik RouterOS (via Route Metrics & Netwatch health-checks) shifts live routes to Starlink without network dropouts.
+- **Dish Telemetry & Monitoring:** `src/lib/services/starlink.ts` interfaces with Starlink's Enterprise Telemetry API (OAuth2 client-credentials + metrics polling). While live API keys are not supplied in development, clearly-labeled simulated telemetry feeds into the `/dashboard/network` console.
 
 ## Deployment
 
@@ -159,7 +183,8 @@ src/components/marketing/   Public landing page sections
 | Auth, RBAC, subscriptions, tickets, notifications, invoices | Fully implemented against Prisma/Postgres |
 | Paystack / Flutterwave | Real REST integration, needs your live/test API keys |
 | MikroTik | Real REST client, needs a reachable RouterOS ≥7 router |
-| Starlink | Real OAuth2 + REST shape, **simulated data** until you have Enterprise API access |
+| Starlink (Fallback WAN) | Real OAuth2 + REST shape, **simulated data** until you have Enterprise API access |
+| Phase3 Telecom (Primary WAN) | Managed via ONT gateway and MikroTik primary routing metric |
 | Everything | Written but never run against live infra in this environment (no network access during generation) — run `npm install`, migrate, and smoke-test before trusting it in production |
 
 ## Demo accounts

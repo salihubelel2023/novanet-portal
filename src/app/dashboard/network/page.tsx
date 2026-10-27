@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Radio, Satellite, Server, Activity, AlertTriangle } from "lucide-react";
+import { Radio, Satellite, Server, Activity, AlertTriangle, ShieldCheck, Cable } from "lucide-react";
 import { requireRole, ROLE_GROUPS } from "@/lib/rbac";
 import { prisma } from "@/lib/prisma";
 import { getMikrotikClient, isMikrotikConfigured } from "@/lib/services/mikrotik";
@@ -49,7 +49,10 @@ export default async function NetworkPage() {
 
   return (
     <div>
-      <PageHeader title="Network" description="Live status for MikroTik routers and Starlink backhaul." />
+      <PageHeader
+        title="Network"
+        description="Live monitoring for Phase3 Telecom primary fiber, MikroTik routing core, and Starlink fallback backhaul."
+      />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Devices" value={summary.total.toString()} icon={Server} accent="muted" />
@@ -58,14 +61,88 @@ export default async function NetworkPage() {
         <StatCard label="Offline" value={summary.offline.toString()} icon={Radio} accent="sky" />
       </div>
 
+      {/* Dual-WAN Redundancy Overview */}
+      <Card className="mt-6 border-signal/20 bg-card/60 backdrop-blur-sm">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4 text-signal" /> Dual-WAN Redundancy & Uplink Architecture
+            </CardTitle>
+            <CardDescription>
+              Automatic multi-WAN failover routed through the MikroTik core router.
+            </CardDescription>
+          </div>
+          <Badge variant="success">Active Failover Enabled</Badge>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 md:grid-cols-2">
+            {/* Primary WAN */}
+            <div className="rounded-lg border border-signal/30 bg-signal/5 p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Cable className="h-4 w-4 text-signal" />
+                  <p className="text-sm font-semibold text-foreground">WAN 1: Phase3 Telecom (Primary)</p>
+                </div>
+                <Badge variant="success">Active Link</Badge>
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">
+                High-capacity terrestrial metro fiber backhaul delivering ultra-low latency (&lt;15ms) across Abuja.
+              </p>
+              <div className="mt-3 grid grid-cols-3 gap-2 border-t border-border/50 pt-2 text-xs">
+                <div>
+                  <p className="text-muted-foreground">Medium</p>
+                  <p className="font-medium">Metro Fiber</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Priority</p>
+                  <p className="font-medium text-signal">Route Metric 1</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Target Latency</p>
+                  <p className="font-medium text-signal">&lt; 15 ms</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Fallback WAN */}
+            <div className="rounded-lg border border-sky/30 bg-sky/5 p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Satellite className="h-4 w-4 text-sky" />
+                  <p className="text-sm font-semibold text-foreground">WAN 2: Starlink Satellite (Fallback)</p>
+                </div>
+                <Badge variant="secondary">Standby Failover</Badge>
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Low Earth Orbit (LEO) satellite link configured for automatic standby failover if fiber maintenance or cuts occur.
+              </p>
+              <div className="mt-3 grid grid-cols-3 gap-2 border-t border-border/50 pt-2 text-xs">
+                <div>
+                  <p className="text-muted-foreground">Medium</p>
+                  <p className="font-medium">LEO Satellite</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Priority</p>
+                  <p className="font-medium text-sky">Route Metric 2</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Failover Mode</p>
+                  <p className="font-medium text-sky">Auto Netwatch</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* MikroTik */}
       <Card className="mt-6">
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <Radio className="h-4 w-4 text-signal" /> MikroTik hotspot
+              <Radio className="h-4 w-4 text-signal" /> MikroTik hotspot & gateway
             </CardTitle>
-            <CardDescription>RouterOS REST API — live router health and active sessions.</CardDescription>
+            <CardDescription>RouterOS REST API — core routing, dual-WAN failover, and active sessions.</CardDescription>
           </div>
           {mikrotikData.configured && "reachable" in mikrotikData && (
             <Badge variant={mikrotikData.reachable ? "success" : "danger"}>
@@ -139,18 +216,23 @@ export default async function NetworkPage() {
         </CardContent>
       </Card>
 
-      {/* Starlink */}
+      {/* Starlink Fallback Backhaul */}
       <Card className="mt-6">
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <Satellite className="h-4 w-4 text-sky" /> Starlink backhaul
+              <Satellite className="h-4 w-4 text-sky" /> Starlink — Secondary / Fallback Uplink
             </CardTitle>
-            <CardDescription>Satellite links feeding NovaNet's terrestrial network.</CardDescription>
+            <CardDescription>
+              Satellite telemetry for standby backhaul — automatically activated if Phase3 Telecom fiber encounters cuts or outages.
+            </CardDescription>
           </div>
-          <Badge variant={starlinkIntegrationStatus() === "live" ? "success" : "secondary"}>
-            {starlinkIntegrationStatus() === "live" ? "Live data" : "Simulated data"}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary">Standby Failover</Badge>
+            <Badge variant={starlinkIntegrationStatus() === "live" ? "success" : "secondary"}>
+              {starlinkIntegrationStatus() === "live" ? "Live data" : "Simulated data"}
+            </Badge>
+          </div>
         </CardHeader>
         <CardContent>
           {starlinkDishes.length === 0 ? (

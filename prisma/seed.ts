@@ -372,9 +372,22 @@ async function main() {
   });
 
   // ── Network devices ───────────────────────────────────────────────
+  // ── Network infrastructure (Phase3 Telecom Primary + Starlink Fallback) ──
+  await prisma.networkDevice.create({
+    data: {
+      name: "Phase3 Telecom Metro Fiber Gateway (WAN1 - Primary)",
+      type: "ONT",
+      location: "Estate NOC, Santos Estate, Dakwo",
+      ipAddress: "197.210.12.1",
+      estateId: santosEstate.id,
+      status: "ONLINE",
+      lastSeenAt: now,
+    },
+  });
+
   const router = await prisma.networkDevice.create({
     data: {
-      name: "Santos Estate Core Router",
+      name: "Santos Estate Core Router (MikroTik CCR2004)",
       type: "MIKROTIK_ROUTER",
       location: "Estate NOC, Santos Estate, Dakwo",
       ipAddress: "10.10.0.1",
@@ -386,7 +399,7 @@ async function main() {
 
   await prisma.networkDevice.create({
     data: {
-      name: "Santos Estate Starlink #1",
+      name: "Starlink Enterprise Terminal (WAN2 - Secondary Fallback)",
       type: "STARLINK_DISH",
       location: "Estate NOC rooftop, Santos Estate",
       estateId: santosEstate.id,
