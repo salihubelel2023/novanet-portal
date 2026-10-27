@@ -6,6 +6,7 @@ export const generateVouchersSchema = z.object({
   batchName: z.string().min(2).optional(),
 });
 export type GenerateVouchersInput = z.infer<typeof generateVouchersSchema>;
+export type GenerateVouchersFormValues = z.input<typeof generateVouchersSchema>;
 
 export const redeemVoucherSchema = z.object({
   code: z

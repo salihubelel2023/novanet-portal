@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const loginSchema = z.object({
-  email: z.string().email("Enter a valid email address"),
+  email: z.email({ message: "Enter a valid email address" }),
   password: z.string().min(1, "Enter your password"),
 });
 export type LoginInput = z.infer<typeof loginSchema>;
@@ -16,7 +16,7 @@ export const registerSchema = z
   .object({
     accountType: z.enum(["RESIDENT", "BUSINESS", "HOTSPOT_USER"]),
     name: z.string().min(2, "Enter your full name"),
-    email: z.string().email("Enter a valid email address"),
+    email: z.email({ message: "Enter a valid email address" }),
     phone: z
       .string()
       .regex(/^(\+234|0)[789]\d{9}$/, "Enter a valid Nigerian phone number"),

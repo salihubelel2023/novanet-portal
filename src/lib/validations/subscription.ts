@@ -27,3 +27,4 @@ export const planSchema = z.object({
   isPopular: z.boolean().default(false),
 });
 export type PlanInput = z.infer<typeof planSchema>;
+export type PlanFormValues = z.input<typeof planSchema>;

@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
-import { planSchema, type PlanInput } from "@/lib/validations/subscription";
+import { planSchema, type PlanInput, type PlanFormValues } from "@/lib/validations/subscription";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -34,7 +34,7 @@ export function PlanForm() {
     setValue,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<PlanInput>({
+  } = useForm<PlanFormValues, unknown, PlanInput>({
     resolver: zodResolver(planSchema),
     defaultValues: { isActive: true, isPopular: false, features: [] },
   });

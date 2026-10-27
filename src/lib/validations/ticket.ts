@@ -7,6 +7,7 @@ export const createTicketSchema = z.object({
   priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).default("MEDIUM"),
 });
 export type CreateTicketInput = z.infer<typeof createTicketSchema>;
+export type CreateTicketFormValues = z.input<typeof createTicketSchema>;
 
 export const replyTicketSchema = z.object({
   message: z.string().min(1, "Write a reply before sending"),

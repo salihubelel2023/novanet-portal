@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
-import { generateVouchersSchema, type GenerateVouchersInput } from "@/lib/validations/voucher";
+import { generateVouchersSchema, type GenerateVouchersInput, type GenerateVouchersFormValues } from "@/lib/validations/voucher";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/primitives";
@@ -35,7 +35,7 @@ export function VoucherGenerateForm({ plans }: { plans: HotspotPlanOption[] }) {
     watch,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<GenerateVouchersInput>({
+  } = useForm<GenerateVouchersFormValues, unknown, GenerateVouchersInput>({
     resolver: zodResolver(generateVouchersSchema),
     defaultValues: { quantity: 10 },
   });

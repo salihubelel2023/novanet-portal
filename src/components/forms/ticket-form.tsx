@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
-import { createTicketSchema, type CreateTicketInput } from "@/lib/validations/ticket";
+import { createTicketSchema, type CreateTicketInput, type CreateTicketFormValues } from "@/lib/validations/ticket";
 import { TICKET_CATEGORY_LABELS, TICKET_PRIORITY_LABELS } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,7 +33,7 @@ export function TicketForm() {
     setValue,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<CreateTicketInput>({
+  } = useForm<CreateTicketFormValues, unknown, CreateTicketInput>({
     resolver: zodResolver(createTicketSchema),
     defaultValues: { priority: "MEDIUM" },
   });
