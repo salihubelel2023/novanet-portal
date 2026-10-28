@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { registerSchema } from "@/lib/validations/auth";
 import { notifyRole } from "@/lib/services/notification";
+import { issuePhoneVerificationCode } from "@/lib/services/verification";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 
 /** Sign-up attempts allowed per IP before throttling kicks in. */
@@ -62,6 +63,14 @@ export async function POST(req: Request) {
     type: "INFO",
     link: "/dashboard/users",
   });
+
+  // Best-effort: send the phone-verification OTP immediately so new users
+  // can verify without hunting for the button. Failures never block signup.
+  try {
+    await issuePhoneVerificationCode(user.id);
+  } catch (err) {
+    console.error("Post-signup verification SMS failed (non-fatal):", err);
+  }
 
   return NextResponse.json({ id: user.id }, { status: 201 });
 }

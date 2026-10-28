@@ -21,6 +21,16 @@ export async function POST(req: Request) {
   }
 
   const user = await prisma.user.findUniqueOrThrow({ where: { id: gate.id } });
+
+  // Soft gate: voucher purchases require a verified phone number. Login and
+  // everything else stay open; the dashboard shows a verification banner.
+  if (!user.phoneVerifiedAt) {
+    return NextResponse.json(
+      { error: "Verify your phone number to buy vouchers.", code: "PHONE_VERIFICATION_REQUIRED" },
+      { status: 403 }
+    );
+  }
+
   const reference = generateReference("VCH");
 
   await prisma.payment.create({

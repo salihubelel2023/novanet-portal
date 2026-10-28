@@ -173,6 +173,9 @@ model User {
   role         Role       @default(RESIDENT)
   status       UserStatus @default(ACTIVE)
   image        String?
+  // Set when the user confirms the OTP sent to their phone. Null means
+  // unverified; voucher purchases are gated on it (soft gate).
+  phoneVerifiedAt DateTime?
 
   address      String?
   district     String?
@@ -196,10 +199,30 @@ model User {
   technicianJobs    TechnicianJob[]  @relation("JobTechnician")
   customerJobs      TechnicianJob[]  @relation("JobCustomer")
   auditLogs         AuditLog[]
+  verificationCodes VerificationCode[]
 
   @@index([role])
   @@index([estateId])
   @@map("users")
+}
+
+// One-time SMS codes for phone verification. Codes are stored hashed;
+// issuing invalidates the user's previous unconsumed codes.
+model VerificationCode {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  phone      String
+  codeHash   String
+  purpose    String    @default("PHONE_VERIFY")
+  expiresAt  DateTime
+  consumedAt DateTime?
+  attempts   Int       @default(0)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, purpose])
+  @@map("verification_codes")
 }
 
 model Plan {
