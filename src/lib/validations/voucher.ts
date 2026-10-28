@@ -22,3 +22,14 @@ export const purchaseVoucherSchema = z.object({
   provider: z.enum(["PAYSTACK", "FLUTTERWAVE"]),
 });
 export type PurchaseVoucherInput = z.infer<typeof purchaseVoucherSchema>;
+
+/** Guest (no-account) voucher purchase: same payment flow, contact details collected up front. */
+export const guestPurchaseSchema = z.object({
+  planId: z.string().min(1),
+  provider: z.enum(["PAYSTACK", "FLUTTERWAVE"]),
+  phone: z
+    .string()
+    .regex(/^(\+234|0)[789]\d{9}$/, "Enter a valid Nigerian phone number"),
+  email: z.email({ message: "Enter a valid email address" }),
+});
+export type GuestPurchaseInput = z.infer<typeof guestPurchaseSchema>;

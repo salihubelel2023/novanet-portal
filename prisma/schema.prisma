@@ -279,8 +279,12 @@ model Payment {
   id                String          @id @default(cuid())
   reference         String          @unique
   providerReference String?
-  userId            String
-  user              User            @relation(fields: [userId], references: [id])
+  // Null for guest (no-account) voucher purchases.
+  userId            String?
+  user              User?           @relation(fields: [userId], references: [id])
+  // Guest purchase contact details (user is null in that case).
+  guestPhone        String?
+  guestEmail        String?
   subscriptionId    String?
   subscription      Subscription?   @relation(fields: [subscriptionId], references: [id])
   amount            Decimal         @db.Decimal(12, 2)

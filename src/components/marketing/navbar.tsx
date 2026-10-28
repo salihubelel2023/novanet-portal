@@ -10,6 +10,7 @@ const LINKS = [
   { href: "#features", label: "Features" },
   { href: "#how-it-works", label: "How it works" },
   { href: "#pricing", label: "Pricing" },
+  { href: "/buy", label: "Buy voucher" },
   { href: "/redeem", label: "Redeem voucher" },
 ];
 
