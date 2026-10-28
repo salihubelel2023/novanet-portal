@@ -6,7 +6,7 @@ import { PageHeader, EmptyState } from "@/components/dashboard/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/primitives";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, effectiveVoucherStatus } from "@/lib/utils";
 import { VoucherGenerateForm } from "@/components/forms/voucher-generate-form";
 import { BuyVoucherButton } from "@/components/forms/buy-voucher-button";
 import { VoucherCard } from "@/components/vouchers/voucher-card";
@@ -66,7 +66,9 @@ export default async function VouchersPage() {
                       <TableCell className="text-muted-foreground">{v.redeemedBy?.name ?? "—"}</TableCell>
                       <TableCell>{formatCurrency(Number(v.price))}</TableCell>
                       <TableCell>
-                        <Badge variant={STATUS_VARIANT[v.status]}>{v.status}</Badge>
+                        <Badge variant={STATUS_VARIANT[effectiveVoucherStatus(v.status, v.expiresAt)]}>
+                          {effectiveVoucherStatus(v.status, v.expiresAt)}
+                        </Badge>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -128,7 +130,7 @@ export default async function VouchersPage() {
                   durationHours: v.durationHours,
                   dataCapMB: v.dataCapMB,
                   price: Number(v.price),
-                  status: v.status,
+                  status: effectiveVoucherStatus(v.status, v.expiresAt),
                   expiresAt: v.expiresAt?.toISOString(),
                 }}
               />

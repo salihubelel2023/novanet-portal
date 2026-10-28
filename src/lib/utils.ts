@@ -111,6 +111,24 @@ export function generateReference(prefix: string): string {
   return `${prefix}-${ts}-${rand}`;
 }
 
+export type VoucherStatus = "UNUSED" | "ACTIVE" | "USED" | "EXPIRED" | "DISABLED";
+
+/**
+ * The DB voucher status only flips to EXPIRED on the daily lifecycle sweep
+ * (vercel.json cron), so between sweeps an ACTIVE voucher whose validity
+ * window has passed still reads ACTIVE. Compute the effective status for
+ * display so users see the truth immediately.
+ */
+export function effectiveVoucherStatus(
+  status: string,
+  expiresAt: Date | string | null | undefined
+): VoucherStatus {
+  if (status === "ACTIVE" && expiresAt && new Date(expiresAt).getTime() <= Date.now()) {
+    return "EXPIRED";
+  }
+  return status as VoucherStatus;
+}
+
 export function slugifyId(prefix: string, n: number): string {
   return `${prefix}-${String(n).padStart(5, "0")}`;
 }
