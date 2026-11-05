@@ -1,5 +1,5 @@
 /**
- * NovaNet Portal — database seed
+ * NovaNet Portal - database seed
  *
  * Run with: npm run db:seed  (wraps `tsx prisma/seed.ts`)
  *
@@ -8,7 +8,7 @@
  * functions from src/lib/utils.ts rather than risk an import-resolution
  * mismatch between tsx and the Next build pipeline.
  *
- * DEMO LOGIN — every seeded account shares this password. Change or
+ * DEMO LOGIN - every seeded account shares this password. Change or
  * remove these accounts before deploying anywhere real:
  *   Password: NovaNet@2026
  */
@@ -67,114 +67,57 @@ async function main() {
   });
 
   // ── Plans ─────────────────────────────────────────────────────────
-  // ABUJA DISTRICT PRICING (Residential & Business) + Hotspot Vouchers
-
-  // 1. Premium Diplomatic (Maitama, Asokoro, Guzape, Katampe Ext)
-  // 2. Commercial Hubs (Wuse II, CBD, Jabi, Utako)
-  // 3. High-Growth Gated Estates (Mabushi, Lifecamp, Wuye, Lugbe, Lokogama, Kyami)
-  const [resDiplomatic, resCommercial, resEstate] = await Promise.all([
+  // Universal three-tier monthly pricing (same for every customer, no
+  // location dimension) + pay-as-you-go hotspot vouchers.
+  const [basicTier, standardTier, premiumTier] = await Promise.all([
     prisma.plan.create({
       data: {
-        name: "Resident — Diplomatic Luxury",
-        description: "Maitama, Asokoro, Guzape & Katampe Ext. High burst speeds for smart homes.",
+        name: "Basic",
+        description: "Reliable fiber for everyday home use, one simple price.",
         type: "RESIDENTIAL",
-        district: "DIPLOMATIC",
-        price: 50000,
-        billingCycle: "MONTHLY",
-        speedMbps: 100,
-        deviceLimit: 30,
-        dataCapGB: null,
-        features: ["High burst speeds for smart homes", "Unlimited fiber data", "Dedicated access point", "24/7 VIP priority support"],
-        isActive: true,
-        isPopular: false,
-      },
-    }),
-    prisma.plan.create({
-      data: {
-        name: "Resident — Commercial Hub",
-        description: "Wuse II, CBD, Jabi & Utako. High-speed urban fiber for residential apartments.",
-        type: "RESIDENTIAL",
-        district: "COMMERCIAL",
-        price: 40000,
-        billingCycle: "MONTHLY",
-        speedMbps: 60,
-        deviceLimit: 15,
-        dataCapGB: null,
-        features: ["High-speed urban fiber", "Unlimited data", "Dedicated access point", "Priority support"],
-        isActive: true,
-        isPopular: true,
-      },
-    }),
-    prisma.plan.create({
-      data: {
-        name: "Resident — Gated Estate",
-        description: "Mabushi, Lifecamp, Wuye, Lugbe, Lokogama & Kyami. Competitive mass-market pricing.",
-        type: "RESIDENTIAL",
-        district: "ESTATE",
         price: 30000,
         billingCycle: "MONTHLY",
         speedMbps: 35,
         deviceLimit: 10,
         dataCapGB: null,
-        features: ["Competitive mass-market pricing", "Unlimited data", "Free installation", "Standard support"],
-        isActive: true,
-        isPopular: false,
-      },
-    }),
-  ]);
-
-  const [bizDiplomatic, bizCommercial, bizEstate] = await Promise.all([
-    prisma.plan.create({
-      data: {
-        name: "Business — Diplomatic Enterprise",
-        description: "Maitama, Asokoro, Guzape & Katampe Ext. Mission-critical enterprise fiber.",
-        type: "BUSINESS",
-        district: "DIPLOMATIC",
-        price: 100000,
-        billingCycle: "MONTHLY",
-        speedMbps: 200,
-        deviceLimit: 60,
-        dataCapGB: null,
-        features: ["Dedicated enterprise fiber", "Static IP included", "24/7 priority SLA", "Zero-downtime redundancy"],
+        features: ["Up to 10 connected devices", "Unlimited data", "Free installation", "Standard support"],
         isActive: true,
         isPopular: false,
       },
     }),
     prisma.plan.create({
       data: {
-        name: "Business — Commercial Hub",
-        description: "Wuse II, CBD, Jabi & Utako. Dedicated priority queues for offices and retail POS.",
-        type: "BUSINESS",
-        district: "COMMERCIAL",
-        price: 75000,
+        name: "Standard",
+        description: "High-speed urban fiber for busy households and home offices.",
+        type: "RESIDENTIAL",
+        price: 45000,
         billingCycle: "MONTHLY",
-        speedMbps: 120,
-        deviceLimit: 40,
+        speedMbps: 60,
+        deviceLimit: 15,
         dataCapGB: null,
-        features: ["Dedicated priority queues for POS & retail", "High-throughput office bandwidth", "Static IP available", "Priority business SLA"],
+        features: ["Up to 15 connected devices", "Unlimited data", "Free installation", "Priority support"],
         isActive: true,
         isPopular: true,
       },
     }),
     prisma.plan.create({
       data: {
-        name: "Business — Gated Estate",
-        description: "Mabushi, Lifecamp, Wuye, Lugbe, Lokogama & Kyami. Commercial plaza, clinic & SME retail connectivity.",
-        type: "BUSINESS",
-        district: "ESTATE",
+        name: "Premium",
+        description: "Top-tier speeds for smart homes and power users.",
+        type: "RESIDENTIAL",
         price: 60000,
         billingCycle: "MONTHLY",
-        speedMbps: 75,
-        deviceLimit: 25,
+        speedMbps: 100,
+        deviceLimit: 30,
         dataCapGB: null,
-        features: ["Estate commercial center & SME plan", "Reliable POS uptime", "Unlimited data", "Standard business SLA"],
+        features: ["Up to 30 connected devices", "Unlimited data", "Dedicated access point", "24/7 VIP priority support"],
         isActive: true,
         isPopular: false,
       },
     }),
   ]);
 
-  // Hotspot — unlimited data, speed capped across 3 tiers
+  // Hotspot - unlimited data, speed capped across 3 tiers
   const [hotspotDaily, hotspotWeekly, hotspotMonthly] = await Promise.all([
     prisma.plan.create({
       data: {
@@ -185,7 +128,7 @@ async function main() {
         billingCycle: "DAILY",
         durationHours: 24,
         speedMbps: 5,
-        deviceLimit: 1,
+        deviceLimit: 5,
         dataCapGB: null,
         features: ["Unlimited data", "Speed capped at 5 Mbps", "24-hour validity"],
         isActive: true,
@@ -201,7 +144,7 @@ async function main() {
         billingCycle: "WEEKLY",
         durationHours: 168,
         speedMbps: 10,
-        deviceLimit: 1,
+        deviceLimit: 5,
         dataCapGB: null,
         features: ["Unlimited data", "Speed capped at 10 Mbps", "7-day validity"],
         isActive: true,
@@ -217,7 +160,7 @@ async function main() {
         billingCycle: "MONTHLY",
         durationHours: 720,
         speedMbps: 25,
-        deviceLimit: 1,
+        deviceLimit: 7,
         dataCapGB: null,
         features: ["Unlimited data", "Speed capped at 25 Mbps", "30-day validity"],
         isActive: true,
@@ -330,12 +273,12 @@ async function main() {
     return subscription;
   }
 
-  await seedPaidSubscription(resident.id, resCommercial);
-  await seedPaidSubscription(business.id, bizCommercial);
+  await seedPaidSubscription(resident.id, standardTier);
+  await seedPaidSubscription(business.id, premiumTier);
 
   // ── Hotspot vouchers ──────────────────────────────────────────────
   const batch = await prisma.voucherBatch.create({
-    data: { name: "Santos Estate Kiosk — Launch Batch", quantity: 20, planId: hotspotDaily.id, generatedById: admin.id },
+    data: { name: "Santos Estate Kiosk - Launch Batch", quantity: 20, planId: hotspotDaily.id, generatedById: admin.id },
   });
 
   const voucherCodes = Array.from({ length: 20 }, () => generateVoucherCode());
@@ -418,7 +361,7 @@ async function main() {
       userId: resident.id,
       deviceId: router.id,
       estateId: santosEstate.id,
-      notes: "Initial access point install for Block 4 — line of sight confirmed to estate mast.",
+      notes: "Initial access point install for Block 4 - line of sight confirmed to estate mast.",
       scheduledAt: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000),
       completedAt: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000 + 3 * 60 * 60 * 1000),
     },
@@ -441,14 +384,14 @@ async function main() {
     data: {
       ticketId: ticket.id,
       senderId: resident.id,
-      message: "Just started happening this week — is this a congestion issue on the estate link?",
+      message: "Just started happening this week - is this a congestion issue on the estate link?",
     },
   });
   await prisma.ticketMessage.create({
     data: {
       ticketId: ticket.id,
       senderId: technician.id,
-      message: "Thanks for flagging — checking the router's peak-hour load now, will update you shortly.",
+      message: "Thanks for flagging - checking the router's peak-hour load now, will update you shortly.",
     },
   });
 
@@ -488,7 +431,7 @@ async function main() {
 
   console.log("Seed complete:");
   console.log(`  Estate:    ${santosEstate.name}, ${santosEstate.city}`);
-  console.log(`  Plans:     ${[resDiplomatic, resCommercial, resEstate, bizDiplomatic, bizCommercial, bizEstate, hotspotDaily, hotspotWeekly, hotspotMonthly].length}`);
+  console.log(`  Plans:     ${[basicTier, standardTier, premiumTier, hotspotDaily, hotspotWeekly, hotspotMonthly].length}`);
   console.log(`  Vouchers:  ${voucherCodes.length + 1}`);
   console.log("");
   console.log("  Demo logins (password for all: NovaNet@2026):");
