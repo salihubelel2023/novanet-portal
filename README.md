@@ -42,12 +42,12 @@ One price for every customer, everywhere we operate in Abuja:
 
 | Tier | Speed | Devices | Price |
 | :--- | :--- | :--- | :--- |
-| **Basic** | 35 Mbps | Up to 10 | ₦30,000 / mo |
-| **Standard** | 60 Mbps | Up to 15 | ₦45,000 / mo |
-| **Premium** | 100 Mbps | Up to 30 | ₦60,000 / mo |
+| **Basic** | 50 Mbps | Up to 10 | ₦30,000 / mo |
+| **Standard** | 100 Mbps | Up to 20 | ₦45,000 / mo |
+| **Premium** | 200 Mbps | Up to 40 | ₦70,000 / mo |
 
 **Hotspot Voucher Passes (Unlimited Data · Speed Capped):**
-* **Daily Pass:** ₦500 / 24 hrs (5 Mbps speed cap, up to 5 devices)
+* **Daily Pass:** ₦500 / 24 hrs (5 Mbps speed cap, up to 3 devices)
 * **Weekly Pass:** ₦2,500 / 7 days (10 Mbps speed cap, up to 5 devices)
 * **Monthly Pass:** ₦8,000 / 30 days (25 Mbps speed cap, up to 7 devices)
 

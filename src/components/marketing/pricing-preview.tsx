@@ -9,7 +9,7 @@ const TIERS = [
     price: 30000,
     cycle: "/month",
     description: "Reliable fiber for everyday home use, one simple price.",
-    speed: "35 Mbps",
+    speed: "50 Mbps",
     features: ["Up to 10 connected devices", "Unlimited data", "Free installation", "Standard support"],
     popular: false,
   },
@@ -17,18 +17,18 @@ const TIERS = [
     name: "Standard",
     price: 45000,
     cycle: "/month",
-    description: "High-speed urban fiber for busy households and home offices.",
-    speed: "60 Mbps",
-    features: ["Up to 15 connected devices", "Unlimited data", "Free installation", "Priority support"],
+    description: "High speed urban fiber for busy households and home offices.",
+    speed: "100 Mbps",
+    features: ["Up to 20 connected devices", "Unlimited data", "Free installation", "Priority support"],
     popular: true,
   },
   {
     name: "Premium",
-    price: 60000,
+    price: 70000,
     cycle: "/month",
-    description: "Top-tier speeds for smart homes and power users.",
-    speed: "100 Mbps",
-    features: ["Up to 30 connected devices", "Unlimited data", "Dedicated access point", "24/7 VIP priority support"],
+    description: "Top tier speeds for smart homes and power users.",
+    speed: "200 Mbps",
+    features: ["Up to 40 connected devices", "Unlimited data", "Dedicated access point", "24/7 VIP priority support"],
     popular: false,
   },
 ];
@@ -81,7 +81,7 @@ export function PricingPreview() {
           ))}
         </div>
         <p className="mt-6 text-xs text-muted-foreground">
-          One price for every customer, everywhere we operate in Abuja. Pay-as-you-go hotspot passes are available on the
+          One price for every customer, everywhere we operate in Abuja. Pay as you go hotspot passes are available on the
           buy voucher page.
         </p>
       </div>
