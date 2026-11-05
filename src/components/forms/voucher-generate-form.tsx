@@ -97,7 +97,7 @@ export function VoucherGenerateForm({ plans }: { plans: HotspotPlanOption[] }) {
 
           <div className="space-y-1.5">
             <Label htmlFor="batchName">Batch name (optional)</Label>
-            <Input id="batchName" placeholder="e.g. Estate Kiosk - July" {...register("batchName")} />
+            <Input id="batchName" placeholder="e.g. Estate Kiosk July" {...register("batchName")} />
           </div>
 
           <DialogFooter>

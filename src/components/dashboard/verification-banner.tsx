@@ -36,7 +36,7 @@ export function VerificationBanner({ phone }: { phone: string | null }) {
         toast.success(`Code sent to ${phone}.`);
       }
     } catch {
-      toast.error("Network error - please try again.");
+      toast.error("Network error, please try again.");
     } finally {
       setSending(false);
     }
@@ -60,7 +60,7 @@ export function VerificationBanner({ phone }: { phone: string | null }) {
       setOpen(false);
       router.refresh();
     } catch {
-      toast.error("Network error - please try again.");
+      toast.error("Network error, please try again.");
     } finally {
       setVerifying(false);
     }

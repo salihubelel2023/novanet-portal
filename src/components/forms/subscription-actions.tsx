@@ -28,7 +28,7 @@ export function AutoRenewToggle({ subscriptionId, initial }: { subscriptionId: s
     });
     setLoading(false);
     if (!res.ok) {
-      toast.error("Could not update auto-renew.");
+      toast.error("Could not update auto renew.");
       return;
     }
     setChecked((c) => !c);

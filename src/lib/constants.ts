@@ -25,7 +25,7 @@ export const ROLE_DESCRIPTIONS: Record<Role, string> = {
   TECHNICIAN: "Installations, repairs and field diagnostics.",
   RESIDENT: "Home internet for an estate address.",
   BUSINESS: "Dedicated connectivity for a company or office.",
-  HOTSPOT_USER: "Pay-as-you-go Wi-Fi with vouchers.",
+  HOTSPOT_USER: "Pay as you go WiFi with vouchers.",
 };
 
 export const TICKET_CATEGORY_LABELS: Record<TicketCategory, string> = {

@@ -206,7 +206,7 @@ async function HotspotOverview({ userId }: { userId: string }) {
     <div>
       <PageHeader
         title="Your hotspot"
-        description="Manage your Wi-Fi access."
+        description="Manage your WiFi access."
         actions={
           <Button asChild>
             <Link href="/dashboard/vouchers">Buy a voucher</Link>

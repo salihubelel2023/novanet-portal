@@ -28,7 +28,7 @@ export default async function BuyVoucherPage() {
         <div className="w-full max-w-xl">
           <div className="text-center">
             <span className="eyebrow">Hotspot access</span>
-            <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight">Buy a Wi-Fi voucher</h1>
+            <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight">Buy a WiFi voucher</h1>
             <p className="mt-2 text-sm text-muted-foreground">
               No account needed - pay, get your code by SMS, and redeem it to get online.
             </p>

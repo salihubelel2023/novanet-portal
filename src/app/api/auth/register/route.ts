@@ -14,7 +14,7 @@ export async function POST(req: Request) {
   const limit = rateLimit(`register:${getClientIp(req)}`, REGISTER_LIMIT, REGISTER_WINDOW_MS);
   if (!limit.ok) {
     return NextResponse.json(
-      { error: "Too many sign-up attempts from this network. Please try again later." },
+      { error: "Too many sign up attempts from this network. Please try again later." },
       { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds) } }
     );
   }

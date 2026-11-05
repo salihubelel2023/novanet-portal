@@ -143,7 +143,7 @@ export function PlanForm() {
               id="durationHours"
               type="number"
               min={1}
-              placeholder="e.g. 3 for a 3-hour pass - blank uses the billing cycle"
+              placeholder="e.g. 3 for a 3 hour pass, blank uses the billing cycle"
               {...register("durationHours")}
             />
           </div>

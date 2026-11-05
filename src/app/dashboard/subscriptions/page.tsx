@@ -94,7 +94,7 @@ export default async function SubscriptionsPage() {
                 {activeSubscription.status === "ACTIVE" ? (
                   <>
                     <div className="flex items-center gap-2 text-sm">
-                      <span className="text-muted-foreground">Auto-renew</span>
+                      <span className="text-muted-foreground">Auto renew</span>
                       <AutoRenewToggle subscriptionId={activeSubscription.id} initial={activeSubscription.autoRenew} />
                     </div>
                     <CancelSubscriptionButton subscriptionId={activeSubscription.id} planName={activeSubscription.plan.name} />

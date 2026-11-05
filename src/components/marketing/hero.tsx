@@ -19,7 +19,7 @@ export function Hero() {
             run like software.
           </h1>
           <p className="mt-6 max-w-lg text-lg text-muted-foreground">
-            NovaNet connects estates, businesses and pay-as-you-go hotspot users on one
+            NovaNet connects estates, businesses and pay as you go hotspot users on one
             network - and gives your team a single console to provision, bill, monitor
             and support all of it.
           </p>

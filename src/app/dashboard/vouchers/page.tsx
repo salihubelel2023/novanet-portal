@@ -38,7 +38,7 @@ export default async function VouchersPage() {
       <div>
         <PageHeader
           title="Hotspot vouchers"
-          description="Generate and track pay-as-you-go access codes."
+          description="Generate and track pay as you go access codes."
           actions={<VoucherGenerateForm plans={hotspotPlans.map((p) => ({ id: p.id, name: p.name, price: Number(p.price) }))} />}
         />
         {vouchers.length === 0 ? (
@@ -94,7 +94,7 @@ export default async function VouchersPage() {
 
   return (
     <div>
-      <PageHeader title="Vouchers" description="Buy Wi-Fi access or check on codes you've used." />
+      <PageHeader title="Vouchers" description="Buy WiFi access or check on codes you've used." />
 
       <div>
         <h2 className="font-display text-lg font-semibold">Buy a voucher</h2>

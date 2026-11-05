@@ -51,7 +51,7 @@ export function GuestCheckoutForm({ plans }: { plans: GuestPlanOption[] }) {
       }
       window.location.href = json.redirectUrl;
     } catch {
-      toast.error("Network error - please try again.");
+      toast.error("Network error, please try again.");
       setLoading(false);
     }
   }

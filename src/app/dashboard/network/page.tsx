@@ -142,7 +142,7 @@ export default async function NetworkPage() {
             <CardTitle className="flex items-center gap-2">
               <Radio className="h-4 w-4 text-signal" /> MikroTik hotspot & gateway
             </CardTitle>
-            <CardDescription>RouterOS REST API - core routing, dual-WAN failover, and active sessions.</CardDescription>
+            <CardDescription>RouterOS REST API: core routing, dual WAN failover, and active sessions.</CardDescription>
           </div>
           {mikrotikData.configured && "reachable" in mikrotikData && (
             <Badge variant={mikrotikData.reachable ? "success" : "danger"}>
@@ -221,7 +221,7 @@ export default async function NetworkPage() {
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <Satellite className="h-4 w-4 text-sky" /> Starlink - Secondary / Fallback Uplink
+              <Satellite className="h-4 w-4 text-sky" /> Starlink: Secondary / Fallback Uplink
             </CardTitle>
             <CardDescription>
               Satellite telemetry for standby backhaul - automatically activated if Phase3 Telecom fiber encounters cuts or outages.
