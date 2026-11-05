@@ -10,7 +10,15 @@ export default async function BuyVoucherPage() {
   const plans = await prisma.plan.findMany({
     where: { type: "HOTSPOT", isActive: true },
     orderBy: { price: "asc" },
-    select: { id: true, name: true, description: true, price: true, speedMbps: true, dataCapGB: true },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      price: true,
+      speedMbps: true,
+      dataCapGB: true,
+      deviceLimit: true,
+    },
   });
 
   return (
@@ -22,7 +30,7 @@ export default async function BuyVoucherPage() {
             <span className="eyebrow">Hotspot access</span>
             <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight">Buy a Wi-Fi voucher</h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              No account needed — pay, get your code by SMS, and redeem it to get online.
+              No account needed - pay, get your code by SMS, and redeem it to get online.
             </p>
           </div>
           <div className="mt-10 rounded-2xl border border-border bg-card p-6 shadow-card sm:p-8">
@@ -34,6 +42,7 @@ export default async function BuyVoucherPage() {
                 price: Number(p.price),
                 speedMbps: p.speedMbps,
                 dataCapGB: p.dataCapGB,
+                deviceLimit: p.deviceLimit,
               }))}
             />
           </div>

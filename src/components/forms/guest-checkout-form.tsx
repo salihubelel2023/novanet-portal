@@ -17,6 +17,7 @@ export type GuestPlanOption = {
   price: number;
   speedMbps: number;
   dataCapGB: number | null;
+  deviceLimit: number | null;
 };
 
 /**
@@ -50,7 +51,7 @@ export function GuestCheckoutForm({ plans }: { plans: GuestPlanOption[] }) {
       }
       window.location.href = json.redirectUrl;
     } catch {
-      toast.error("Network error — please try again.");
+      toast.error("Network error - please try again.");
       setLoading(false);
     }
   }
@@ -81,7 +82,11 @@ export function GuestCheckoutForm({ plans }: { plans: GuestPlanOption[] }) {
               <p className="text-sm font-semibold">{plan.name}</p>
               <p className="mt-1 font-display text-lg font-semibold">{formatCurrency(plan.price)}</p>
               <p className="mt-1 text-xs text-muted-foreground">
-                {plan.speedMbps} Mbps · {plan.dataCapGB ? `${plan.dataCapGB} GB cap` : "Unlimited data"}
+                {plan.speedMbps} Mbps ·{" "}
+                {plan.deviceLimit && plan.deviceLimit > 1
+                  ? `up to ${plan.deviceLimit} devices · `
+                  : ""}
+                {plan.dataCapGB ? `${plan.dataCapGB} GB cap` : "Unlimited data"}
               </p>
             </button>
           ))}

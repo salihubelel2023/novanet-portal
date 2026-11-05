@@ -2,8 +2,11 @@ import "server-only";
 import { prisma } from "@/lib/prisma";
 import { generateVoucherCode } from "@/lib/utils";
 import { getMikrotikClient } from "@/lib/services/mikrotik";
-import { redeemVoucherRecord, type VoucherStore } from "@/lib/services/voucher-redeem";
-import type { Plan } from "@prisma/client";
+import { redeemVoucherRecord, type VoucherStore, type RedeemableVoucher } from "@/lib/services/voucher-redeem";
+import type { Plan, Prisma } from "@prisma/client";
+
+/** Full voucher row with its plan, as returned by the prisma store. */
+export type VoucherWithPlan = Prisma.HotspotVoucherGetPayload<{ include: { plan: true } }>;
 
 export { VoucherRedemptionError } from "@/lib/services/voucher-redeem";
 
@@ -65,9 +68,7 @@ export async function generateVoucherBatch(params: {
   });
 }
 
-const prismaVoucherStore: VoucherStore<
-  Awaited<ReturnType<typeof prisma.hotspotVoucher.findUniqueOrThrow>> & { plan: { name: string } }
-> = {
+const prismaVoucherStore: VoucherStore<VoucherWithPlan> = {
   async findByCode(code) {
     return prisma.hotspotVoucher.findUnique({
       where: { code },
@@ -96,7 +97,7 @@ const prismaVoucherStore: VoucherStore<
  * Redeem a voucher code: mark it active, set its expiry window, and
  * (best-effort) provision a matching RouterOS hotspot user so the
  * customer's device is actually let onto the network. MikroTik failures
- * are logged but don't block redemption — the voucher is still valid even
+ * are logged but don't block redemption - the voucher is still valid even
  * if the live router push has to be retried by an admin.
  */
 export async function redeemVoucher(params: {
@@ -113,7 +114,11 @@ export async function redeemVoucher(params: {
         name: updated.code,
         password: updated.code,
         limitUptime: `${updated.durationHours}h`,
-        comment: `Voucher ${updated.code} — ${updated.plan.name}`,
+        // One person, multiple devices: the plan's deviceLimit becomes the
+        // RouterOS simultaneous-login count (all devices share the voucher's
+        // single time/data allowance).
+        sharedUsers: updated.plan.deviceLimit ?? 1,
+        comment: `Voucher ${updated.code} - ${updated.plan.name}`,
       });
     } catch (err) {
       // Non-fatal: the voucher redemption itself already succeeded.
