@@ -63,7 +63,7 @@ export async function POST(req: Request) {
         amountNaira: Number(plan.price),
         txRef: reference,
         redirectUrl: `${APP_URL}/dashboard/billing/callback?provider=FLUTTERWAVE`,
-        title: `NovaNet — ${plan.name} voucher`,
+        title: `NovaNet - ${plan.name} voucher`,
       });
       return NextResponse.json({ redirectUrl: result.paymentLink });
     }

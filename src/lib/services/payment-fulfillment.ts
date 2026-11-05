@@ -40,7 +40,7 @@ export type FulfillmentOutcome = "already_processed" | "fulfilled" | "not_found"
  * (activating a Subscription + issuing an Invoice, or minting a
  * self-service HotspotVoucher). Both the Paystack/Flutterwave webhooks
  * AND the synchronous browser callback page call this same function, so
- * whichever one lands first "wins" and the other is a no-op — payments
+ * whichever one lands first "wins" and the other is a no-op - payments
  * are never double-fulfilled.
  */
 export async function fulfillSuccessfulPayment(params: {
@@ -137,7 +137,7 @@ export async function fulfillSuccessfulPayment(params: {
           });
         } else if (payment.guestPhone) {
           // Guest (no-account) purchase: deliver the code by SMS. A failure
-          // here must not fail fulfillment — the guest can still retrieve
+          // here must not fail fulfillment - the guest can still retrieve
           // the code from their payment link.
           try {
             await sendSms(

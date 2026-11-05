@@ -16,14 +16,14 @@ export function toTermiiMsisdn(phone: string): string {
 /**
  * Send an SMS through Termii. When TERMII_API_KEY is not configured
  * (local development), the message is logged instead of failing the
- * calling flow — verification still works end to end.
+ * calling flow - verification still works end to end.
  */
 export async function sendSms(phone: string, message: string): Promise<{ delivered: boolean }> {
   const apiKey = process.env.TERMII_API_KEY;
   const senderId = process.env.TERMII_SENDER_ID ?? "NovaNet";
 
   if (!apiKey) {
-    console.log(`[termii] DEV FALLBACK (no TERMII_API_KEY) — SMS to ${phone}: ${message}`);
+    console.log(`[termii] DEV FALLBACK (no TERMII_API_KEY) - SMS to ${phone}: ${message}`);
     return { delivered: false };
   }
 
@@ -43,7 +43,7 @@ export async function sendSms(phone: string, message: string): Promise<{ deliver
 
   const json = await res.json().catch(() => null);
   // Termii replies 200 with a message_id on success; anything else is a
-  // failure — but we don't throw, callers decide whether SMS is critical.
+  // failure - but we don't throw, callers decide whether SMS is critical.
   const ok = res.ok && (json?.status === "success" || !!json?.message_id);
   if (!ok) {
     throw new Error(json?.message ?? `Termii SMS failed (HTTP ${res.status})`);

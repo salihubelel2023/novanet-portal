@@ -25,7 +25,7 @@ export const ROLE_GROUPS = {
 /**
  * Server Component / Server Action guard. Redirects to /login when signed
  * out, and to /unauthorized when the role doesn't match. This is the
- * second of three enforcement layers (see middleware.ts for the first) —
+ * second of three enforcement layers (see middleware.ts for the first) -
  * middleware alone is not treated as sufficient, since edge middleware has
  * historically been bypassable (e.g. header-spoofing CVEs against
  * Next.js), so every protected page re-checks the session itself.

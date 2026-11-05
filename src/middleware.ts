@@ -19,7 +19,7 @@ const STAFF_ONLY_PREFIXES = ["/dashboard/jobs", "/dashboard/network"];
  * (see src/lib/rbac.ts), and every API route calls apiRequireRole().
  * Relying on middleware alone has been a real source of Next.js auth
  * bypass vulnerabilities in the past, so treat this as a fast, coarse
- * first pass — not the source of truth.
+ * first pass - not the source of truth.
  */
 export default auth((req) => {
   const { pathname } = req.nextUrl;

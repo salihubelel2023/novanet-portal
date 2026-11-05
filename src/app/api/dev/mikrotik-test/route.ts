@@ -42,7 +42,7 @@ export async function GET() {
     try {
       activeUsers = await client.listActiveHotspotUsers();
     } catch (e) {
-      // Hotspot may not be configured on a bare CHR — that is fine.
+      // Hotspot may not be configured on a bare CHR - that is fine.
       hotspotNote =
         e instanceof MikrotikUnavailableError
           ? `Hotspot endpoint unavailable: ${e.message} (normal on a fresh CHR)`

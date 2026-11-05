@@ -11,7 +11,7 @@ import { getClientIp, rateLimit } from "@/lib/rate-limit";
 /**
  * Guest (no-account) voucher purchase. Anyone with the page URL can call
  * this, so it is rate-limited aggressively and every initiation creates a
- * PENDING payment + provider checkout session — no voucher exists until
+ * PENDING payment + provider checkout session - no voucher exists until
  * the provider webhook/callback confirms payment.
  */
 const GUEST_LIMIT = 5;
@@ -76,7 +76,7 @@ export async function POST(req: Request) {
         amountNaira: Number(plan.price),
         txRef: reference,
         redirectUrl: resultUrl,
-        title: `NovaNet — ${plan.name} voucher`,
+        title: `NovaNet - ${plan.name} voucher`,
       });
       return NextResponse.json({ redirectUrl: result.paymentLink });
     }

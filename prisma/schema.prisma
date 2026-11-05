@@ -1,4 +1,4 @@
-// NovaNet Portal — Prisma schema
+// NovaNet Portal - Prisma schema
 // Covers: multi-role auth, subscriptions & plans, Paystack/Flutterwave
 // payments, invoices, hotspot vouchers, support ticketing, notifications,
 // network devices (MikroTik/Starlink) and technician job dispatch.

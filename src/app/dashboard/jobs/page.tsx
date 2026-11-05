@@ -57,7 +57,7 @@ export default async function JobsPage() {
                     </TableCell>
                     <TableCell className="text-muted-foreground">{job.type.charAt(0) + job.type.slice(1).toLowerCase()}</TableCell>
                     {user.role === "ADMIN" && <TableCell className="text-muted-foreground">{job.technician.name}</TableCell>}
-                    <TableCell className="text-muted-foreground">{job.customer?.name ?? job.estate?.name ?? "—"}</TableCell>
+                    <TableCell className="text-muted-foreground">{job.customer?.name ?? job.estate?.name ?? "-"}</TableCell>
                     <TableCell className="text-muted-foreground">{job.scheduledAt ? formatDate(job.scheduledAt) : "Unscheduled"}</TableCell>
                     <TableCell>
                       <Badge variant={STATUS_VARIANT[job.status]}>{job.status.replace("_", " ")}</Badge>

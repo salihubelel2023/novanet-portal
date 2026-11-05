@@ -2,7 +2,7 @@
   "name": "novanet-portal",
   "version": "1.0.0",
   "private": true,
-  "description": "NovaNet Portal — managed internet service provider platform for estates, businesses, hotspot users, technicians and administrators in Nigeria.",
+  "description": "NovaNet Portal - managed internet service provider platform for estates, businesses, hotspot users, technicians and administrators in Nigeria.",
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",

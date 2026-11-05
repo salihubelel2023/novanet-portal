@@ -50,7 +50,7 @@ export function CheckoutDialog({
       }
       window.location.href = json.redirectUrl;
     } catch {
-      toast.error("Network error — please try again.");
+      toast.error("Network error - please try again.");
       setLoading(false);
     }
   }
@@ -61,7 +61,7 @@ export function CheckoutDialog({
         <DialogHeader>
           <DialogTitle>Confirm payment</DialogTitle>
           <DialogDescription>
-            {itemLabel} — {formatCurrency(amountNaira)}
+            {itemLabel} - {formatCurrency(amountNaira)}
           </DialogDescription>
         </DialogHeader>
 

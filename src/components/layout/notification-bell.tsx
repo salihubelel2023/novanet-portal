@@ -34,7 +34,7 @@ export function NotificationBell() {
       const json = await res.json();
       setItems(json.notifications ?? []);
     } catch {
-      // Silent — the bell just stays empty; this isn't a critical-path action.
+      // Silent - the bell just stays empty; this isn't a critical-path action.
     } finally {
       setLoading(false);
     }

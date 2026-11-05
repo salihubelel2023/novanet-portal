@@ -4,7 +4,7 @@ const FEATURES = [
   {
     icon: Gauge,
     title: "Real subscription control",
-    description: "Residents and businesses upgrade, renew or pause plans instantly — no calling in.",
+    description: "Residents and businesses upgrade, renew or pause plans instantly - no calling in.",
   },
   {
     icon: QrCode,

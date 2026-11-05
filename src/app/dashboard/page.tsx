@@ -233,7 +233,7 @@ async function HotspotOverview({ userId }: { userId: string }) {
               <div className="mt-5">
                 <div className="mb-1.5 flex justify-between text-xs text-muted-foreground">
                   <span>Time remaining</span>
-                  <span>{activeVoucher.expiresAt ? formatDate(activeVoucher.expiresAt) : "—"}</span>
+                  <span>{activeVoucher.expiresAt ? formatDate(activeVoucher.expiresAt) : "-"}</span>
                 </div>
                 <Progress value={timeLeftPct} />
               </div>

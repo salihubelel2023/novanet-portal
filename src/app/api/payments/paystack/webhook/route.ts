@@ -4,7 +4,7 @@ import { fulfillSuccessfulPayment } from "@/lib/services/payment-fulfillment";
 
 /**
  * Paystack POSTs here on every transaction event. We verify the
- * x-paystack-signature HMAC before trusting anything in the body — see
+ * x-paystack-signature HMAC before trusting anything in the body - see
  * verifyPaystackWebhookSignature for why this must run against the raw
  * request text, not a re-serialized JSON.parse() of it.
  */

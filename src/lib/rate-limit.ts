@@ -6,7 +6,7 @@ import "server-only";
  * Deliberately dependency-free: it throttles abusive bursts (credential
  * stuffing, mass signups, voucher-code brute forcing) without requiring an
  * external service. Caveat: on serverless hosting each instance keeps its
- * own counters, so this is best-effort rather than a global guarantee —
+ * own counters, so this is best-effort rather than a global guarantee -
  * swap the store for Upstash Redis or similar if distributed limiting
  * becomes necessary.
  */

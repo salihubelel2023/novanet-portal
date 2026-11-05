@@ -2,7 +2,7 @@ const STEPS = [
   {
     number: "01",
     title: "Choose your plan",
-    description: "Resident, business or pay-as-you-go hotspot — sign up online in under five minutes.",
+    description: "Resident, business or pay-as-you-go hotspot - sign up online in under five minutes.",
   },
   {
     number: "02",
@@ -12,7 +12,7 @@ const STEPS = [
   {
     number: "03",
     title: "Stay online, stay informed",
-    description: "Track usage, pay bills, raise tickets and get notified — all from one dashboard.",
+    description: "Track usage, pay bills, raise tickets and get notified - all from one dashboard.",
   },
 ];
 

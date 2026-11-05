@@ -6,9 +6,9 @@ export const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000
 export const COMPANY_LEGAL_NAME = "NovaNet Communications Ltd.";
 export const COMPANY_ADDRESS = "Abuja, FCT, Nigeria";
 export const SUPPORT_EMAIL = "salihubelel2023@gmail.com";
-/** WhatsApp Business line — shown as a tap-to-chat link in the UI. */
+/** WhatsApp Business line - shown as a tap-to-chat link in the UI. */
 export const WHATSAPP_NUMBER = "+2349132376668";
-/** Voice/SMS support line — kept separate from WhatsApp since they differ. */
+/** Voice/SMS support line - kept separate from WhatsApp since they differ. */
 export const SUPPORT_PHONE = "+2349160578363";
 export const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER.replace(/[^\d]/g, "")}`;
 

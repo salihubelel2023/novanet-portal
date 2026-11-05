@@ -74,7 +74,7 @@ export function RegisterForm() {
     });
 
     if (result?.error) {
-      toast.success("Account created — please log in.");
+      toast.success("Account created - please log in.");
       router.push("/login");
       return;
     }
@@ -155,7 +155,7 @@ export function RegisterForm() {
                 <option value="">Select your area in Abuja...</option>
                 {ABUJA_DISTRICTS.map((d) => (
                   <option key={d.id} value={d.id}>
-                    {d.shortName} — {d.areas}
+                    {d.shortName} - {d.areas}
                   </option>
                 ))}
               </select>

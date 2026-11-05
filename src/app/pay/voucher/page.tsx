@@ -48,7 +48,7 @@ async function loadGuestOutcome(searchParams: SearchParams) {
   }
 
   // Still pending? The provider redirected here after the payment attempt,
-  // so verify server-side and fulfill — the same double-path (webhook OR
+  // so verify server-side and fulfill - the same double-path (webhook OR
   // callback) that logged-in purchases use, whichever lands first wins.
   if (payment.status === "PENDING") {
     try {

@@ -5,7 +5,7 @@
 @layer base {
   :root {
     /* ── Light theme ──────────────────────────────────────────────
-       Crisp, trustworthy, utility-grade — this is the register a
+       Crisp, trustworthy, utility-grade - this is the register a
        first-time visitor or a resident paying a bill should land in. */
     --background: 40 20% 98%;
     --foreground: 210 14% 10%;
@@ -49,7 +49,7 @@
 
   .dark {
     /* ── Dark theme (product default) ────────────────────────────
-       Cool charcoal-navy, not flat black — reads as a network
+       Cool charcoal-navy, not flat black - reads as a network
        operations console rather than a generic dark template. */
     --background: 216 24% 5%;
     --foreground: 150 8% 96%;
@@ -107,7 +107,7 @@
     @apply bg-signal/25 text-foreground;
   }
 
-  /* Visible keyboard focus everywhere — never suppressed. */
+  /* Visible keyboard focus everywhere - never suppressed. */
   :focus-visible {
     outline: 2px solid hsl(var(--ring));
     outline-offset: 2px;

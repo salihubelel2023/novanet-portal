@@ -9,7 +9,7 @@
  *   2. set TYPESAFE_API_KEY=<key> in your shell (do NOT commit it)
  *   3. npx tsx scripts/jev-upgrade-review.ts
  *
- * Only the metadata below is sent to the API — no source code, no secrets.
+ * Only the metadata below is sent to the API - no source code, no secrets.
  * A failed call raises an error; it is never treated as an answer.
  */
 

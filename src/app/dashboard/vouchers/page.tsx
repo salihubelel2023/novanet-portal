@@ -63,7 +63,7 @@ export default async function VouchersPage() {
                       <TableCell className="font-mono text-xs">{v.code}</TableCell>
                       <TableCell className="text-muted-foreground">{v.plan.name}</TableCell>
                       <TableCell className="text-muted-foreground">{v.batch?.name ?? "Self-service"}</TableCell>
-                      <TableCell className="text-muted-foreground">{v.redeemedBy?.name ?? "—"}</TableCell>
+                      <TableCell className="text-muted-foreground">{v.redeemedBy?.name ?? "-"}</TableCell>
                       <TableCell>{formatCurrency(Number(v.price))}</TableCell>
                       <TableCell>
                         <Badge variant={STATUS_VARIANT[effectiveVoucherStatus(v.status, v.expiresAt)]}>
