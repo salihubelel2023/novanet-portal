@@ -2,7 +2,7 @@ import type { Config } from "tailwindcss";
 
 // NovaNet design tokens.
 // Palette is grounded in the product, not a generic SaaS default:
-//   signal (emerald) = "connected / active" — the core status color of an ISP
+//   signal (emerald) = "connected / active" - the core status color of an ISP
 //   fiber  (amber)   = warmth, energy, the physical glow of fiber light
 //   sky    (cyan)    = reserved specifically for satellite / Starlink contexts
 // Base is a cool charcoal-navy (not flat black) so dark mode reads as a

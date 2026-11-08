@@ -2,7 +2,11 @@ import "server-only";
 import type { StarlinkTelemetrySnapshot } from "@/types";
 
 /**
- * Starlink network monitoring — PLACEHOLDER INTEGRATION.
+ * Starlink network monitoring - Secondary / Fallback Uplink Integration.
+ *
+ * In NovaNet's network architecture:
+ * - WAN 1 (Primary): Phase3 Telecom high-speed terrestrial metro fiber.
+ * - WAN 2 (Fallback): Starlink Enterprise satellite backhaul for automated failover.
  *
  * Starlink exposes a real Management API and Telemetry API, but both
  * require a Starlink Reseller/Enterprise account with an assigned account
@@ -10,9 +14,9 @@ import type { StarlinkTelemetrySnapshot } from "@/types";
  * under Settings → Service Accounts on starlink.com), and a specific
  * `service line` id per dish being monitored. That account relationship
  * is outside what can be provisioned/tested from this build, so this
- * service is written against the documented shape of that integration —
+ * service is written against the documented shape of that integration -
  * OAuth2 token exchange, then authenticated calls to the telemetry
- * endpoint — but returns clearly-labeled simulated data until real
+ * endpoint - but returns clearly-labeled simulated data until real
  * credentials are supplied.
  *
  * To go live: fill in STARLINK_CLIENT_ID / STARLINK_CLIENT_SECRET /
@@ -94,7 +98,7 @@ export async function getStarlinkTelemetry(
     const data = await res.json();
 
     // Field names here are illustrative of the documented Telemetry API
-    // shape — confirm exact keys against your account's schema once live.
+    // shape - confirm exact keys against your account's schema once live.
     return {
       serviceLineId,
       dishSerial: data.dishSerialNumber ?? "unknown",
@@ -106,7 +110,7 @@ export async function getStarlinkTelemetry(
       simulated: false,
     };
   } catch {
-    // Fail soft into simulated data rather than breaking the dashboard —
+    // Fail soft into simulated data rather than breaking the dashboard -
     // a transient Starlink API hiccup shouldn't take down network monitoring.
     return simulateSnapshot(serviceLineId);
   }

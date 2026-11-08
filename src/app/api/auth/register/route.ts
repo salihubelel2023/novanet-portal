@@ -3,8 +3,22 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { registerSchema } from "@/lib/validations/auth";
 import { notifyRole } from "@/lib/services/notification";
+import { issuePhoneVerificationCode } from "@/lib/services/verification";
+import { getClientIp, rateLimit } from "@/lib/rate-limit";
+
+/** Sign-up attempts allowed per IP before throttling kicks in. */
+const REGISTER_LIMIT = 5;
+const REGISTER_WINDOW_MS = 10 * 60_000;
 
 export async function POST(req: Request) {
+  const limit = rateLimit(`register:${getClientIp(req)}`, REGISTER_LIMIT, REGISTER_WINDOW_MS);
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: "Too many sign up attempts from this network. Please try again later." },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds) } }
+    );
+  }
+
   const body = await req.json().catch(() => null);
   const parsed = registerSchema.safeParse(body);
   if (!parsed.success) {
@@ -49,6 +63,14 @@ export async function POST(req: Request) {
     type: "INFO",
     link: "/dashboard/users",
   });
+
+  // Best-effort: send the phone-verification OTP immediately so new users
+  // can verify without hunting for the button. Failures never block signup.
+  try {
+    await issuePhoneVerificationCode(user.id);
+  } catch (err) {
+    console.error("Post-signup verification SMS failed (non-fatal):", err);
+  }
 
   return NextResponse.json({ id: user.id }, { status: 201 });
 }

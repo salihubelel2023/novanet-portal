@@ -144,6 +144,8 @@ class MikrotikClient {
     password: string;
     profile?: string;
     limitUptime?: string; // RouterOS duration format, e.g. "1d", "3h"
+    /** Max simultaneous logins (devices) for this user; omit for router default of 1. */
+    sharedUsers?: number;
     comment?: string;
   }): Promise<void> {
     await this.request("POST", "/ip/hotspot/user", {
@@ -151,6 +153,9 @@ class MikrotikClient {
       password: params.password,
       profile: params.profile ?? "default",
       "limit-uptime": params.limitUptime,
+      ...(params.sharedUsers && params.sharedUsers > 1
+        ? { "shared-users": String(params.sharedUsers) }
+        : {}),
       comment: params.comment ?? "Created by NovaNet Portal",
     });
   }

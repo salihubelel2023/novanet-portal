@@ -5,27 +5,30 @@ import { formatCurrency } from "@/lib/utils";
 
 const TIERS = [
   {
-    name: "Resident",
-    price: 15000,
+    name: "Basic",
+    price: 30000,
     cycle: "/month",
-    description: "One access point per home, sized to your household.",
+    description: "Reliable fiber for everyday home use, one simple price.",
+    speed: "50 Mbps",
     features: ["Up to 10 connected devices", "Unlimited data", "Free installation", "Standard support"],
     popular: false,
   },
   {
-    name: "Business",
+    name: "Standard",
     price: 45000,
     cycle: "/month",
-    description: "Scales with your business — shops to multi-branch offices.",
-    features: ["From 15 connected devices", "Unlimited data", "Priority technician SLA", "Custom quotes available"],
+    description: "High speed urban fiber for busy households and home offices.",
+    speed: "100 Mbps",
+    features: ["Up to 20 connected devices", "Unlimited data", "Free installation", "Priority support"],
     popular: true,
   },
   {
-    name: "Hotspot",
-    price: 500,
-    cycle: "/day pass",
-    description: "Pay-as-you-go Wi-Fi, no contract — from ₦100/hour.",
-    features: ["1-hour to 30-day passes", "QR or code redemption", "No account required", "Resell-ready"],
+    name: "Premium",
+    price: 70000,
+    cycle: "/month",
+    description: "Top tier speeds for smart homes and power users.",
+    speed: "200 Mbps",
+    features: ["Up to 40 connected devices", "Unlimited data", "Dedicated access point", "24/7 VIP priority support"],
     popular: false,
   },
 ];
@@ -56,6 +59,7 @@ export function PricingPreview() {
               )}
               <h3 className="font-display text-lg font-semibold">{tier.name}</h3>
               <p className="mt-1 text-sm text-muted-foreground">{tier.description}</p>
+              <p className="mt-2 text-xs font-medium text-signal">{tier.speed}</p>
               <div className="mt-6 flex items-baseline gap-1">
                 <span className="font-display text-3xl font-semibold tracking-tight">
                   {formatCurrency(tier.price)}
@@ -77,7 +81,8 @@ export function PricingPreview() {
           ))}
         </div>
         <p className="mt-6 text-xs text-muted-foreground">
-          Indicative pricing — exact plans and prices are configured by NovaNet admins and may vary by estate.
+          One price for every customer, everywhere we operate in Abuja. Pay as you go hotspot passes are available on the
+          buy voucher page.
         </p>
       </div>
     </section>

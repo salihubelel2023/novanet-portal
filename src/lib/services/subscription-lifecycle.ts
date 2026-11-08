@@ -68,7 +68,7 @@ export async function processSubscriptionLifecycle(): Promise<LifecycleRunResult
       await notifyUser({
         userId: sub.userId,
         title: "Subscription expired",
-        message: `Your ${sub.plan.name} subscription expired on ${sub.endDate ? formatDate(sub.endDate) : "schedule"}. Please renew to restore high-speed access.`,
+        message: `Your ${sub.plan.name} subscription expired on ${sub.endDate ? formatDate(sub.endDate) : "schedule"}. Please renew to restore high speed access.`,
         type: "SUBSCRIPTION",
         link: "/dashboard/subscriptions",
       });
@@ -129,7 +129,7 @@ export async function processSubscriptionLifecycle(): Promise<LifecycleRunResult
         await notifyUser({
           userId: voucher.redeemedById,
           title: "Voucher expired",
-          message: `Your Wi-Fi voucher (${voucher.code}) for ${voucher.plan.name} has expired.`,
+          message: `Your WiFi voucher (${voucher.code}) for ${voucher.plan.name} has expired.`,
           type: "VOUCHER",
           link: "/dashboard/vouchers",
         });

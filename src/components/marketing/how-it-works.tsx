@@ -2,7 +2,7 @@ const STEPS = [
   {
     number: "01",
     title: "Choose your plan",
-    description: "Resident, business or pay-as-you-go hotspot — sign up online in under five minutes.",
+    description: "Resident, business or pay as you go hotspot: sign up online in under five minutes.",
   },
   {
     number: "02",
@@ -12,7 +12,7 @@ const STEPS = [
   {
     number: "03",
     title: "Stay online, stay informed",
-    description: "Track usage, pay bills, raise tickets and get notified — all from one dashboard.",
+    description: "Track usage, pay bills, raise tickets and get notified, all from one dashboard.",
   },
 ];
 
@@ -23,7 +23,7 @@ export function HowItWorks() {
         <div className="max-w-2xl">
           <span className="eyebrow">The process</span>
           <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight sm:text-4xl">
-            From sign-up to signal in three steps
+            From sign up to signal in three steps
           </h2>
         </div>
 

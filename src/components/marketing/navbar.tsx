@@ -10,11 +10,22 @@ const LINKS = [
   { href: "#features", label: "Features" },
   { href: "#how-it-works", label: "How it works" },
   { href: "#pricing", label: "Pricing" },
+  { href: "/buy", label: "Buy voucher" },
   { href: "/redeem", label: "Redeem voucher" },
 ];
 
 export function MarketingNavbar() {
   const [open, setOpen] = React.useState(false);
+
+  // Close the mobile menu as soon as the page scrolls. Without this the
+  // open menu stays pinned over the content while scrolling, which feels
+  // broken on touch devices.
+  React.useEffect(() => {
+    if (!open) return;
+    const close = () => setOpen(false);
+    window.addEventListener("scroll", close, { passive: true });
+    return () => window.removeEventListener("scroll", close);
+  }, [open]);
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur-lg">
@@ -44,7 +55,12 @@ export function MarketingNavbar() {
           </Button>
         </div>
 
-        <button className="md:hidden" onClick={() => setOpen((v) => !v)} aria-label="Toggle menu">
+        <button
+          className="md:hidden"
+          onClick={() => setOpen((v) => !v)}
+          aria-label="Toggle menu"
+          aria-expanded={open}
+        >
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>

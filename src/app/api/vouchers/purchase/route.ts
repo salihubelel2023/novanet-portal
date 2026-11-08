@@ -21,6 +21,16 @@ export async function POST(req: Request) {
   }
 
   const user = await prisma.user.findUniqueOrThrow({ where: { id: gate.id } });
+
+  // Soft gate: voucher purchases require a verified phone number. Login and
+  // everything else stay open; the dashboard shows a verification banner.
+  if (!user.phoneVerifiedAt) {
+    return NextResponse.json(
+      { error: "Verify your phone number to buy vouchers.", code: "PHONE_VERIFICATION_REQUIRED" },
+      { status: 403 }
+    );
+  }
+
   const reference = generateReference("VCH");
 
   await prisma.payment.create({
@@ -53,7 +63,7 @@ export async function POST(req: Request) {
         amountNaira: Number(plan.price),
         txRef: reference,
         redirectUrl: `${APP_URL}/dashboard/billing/callback?provider=FLUTTERWAVE`,
-        title: `NovaNet — ${plan.name} voucher`,
+        title: `NovaNet ${plan.name} voucher`,
       });
       return NextResponse.json({ redirectUrl: result.paymentLink });
     }

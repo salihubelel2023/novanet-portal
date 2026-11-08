@@ -21,9 +21,9 @@ export const planSchema = z.object({
   speedMbps: z.coerce.number().int().positive(),
   deviceLimit: z.coerce.number().int().positive().optional().nullable(),
   durationHours: z.coerce.number().int().positive().optional().nullable(),
-  district: z.string().optional().nullable(),
   features: z.array(z.string()).default([]),
   isActive: z.boolean().default(true),
   isPopular: z.boolean().default(false),
 });
 export type PlanInput = z.infer<typeof planSchema>;
+export type PlanFormValues = z.input<typeof planSchema>;

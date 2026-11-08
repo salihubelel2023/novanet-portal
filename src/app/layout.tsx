@@ -10,11 +10,11 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jet
 
 export const metadata: Metadata = {
   title: {
-    default: `${APP_NAME} — Reliable internet, properly managed`,
+    default: `${APP_NAME} | Reliable internet, properly managed`,
     template: `%s · ${APP_NAME}`,
   },
   description:
-    "NovaNet Portal is the customer, technician and admin platform for a modern Nigerian ISP — estate fibre, business connectivity, pay-as-you-go hotspots, and the network operations behind them.",
+    "NovaNet Portal is the customer, technician and admin platform for a modern Nigerian ISP: estate fibre, business connectivity, pay as you go hotspots, and the network operations behind them.",
 };
 
 export const viewport: Viewport = {

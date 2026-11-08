@@ -15,7 +15,7 @@ function unusedVoucher(overrides: Partial<RedeemableVoucher> = {}): RedeemableVo
     code: "NVN-7K4Q-X29B",
     status: "UNUSED",
     durationHours: 24,
-    plan: { name: "Hotspot Daily" },
+    plan: { name: "Hotspot Daily", deviceLimit: 5 },
     ...overrides,
   };
 }

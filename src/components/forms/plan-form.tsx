@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
-import { planSchema, type PlanInput } from "@/lib/validations/subscription";
+import { planSchema, type PlanInput, type PlanFormValues } from "@/lib/validations/subscription";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -34,7 +34,7 @@ export function PlanForm() {
     setValue,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<PlanInput>({
+  } = useForm<PlanFormValues, unknown, PlanInput>({
     resolver: zodResolver(planSchema),
     defaultValues: { isActive: true, isPopular: false, features: [] },
   });
@@ -115,21 +115,6 @@ export function PlanForm() {
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Label>District / Area (Abuja)</Label>
-            <Select onValueChange={(v) => setValue("district", v === "ALL" ? null : v)}>
-              <SelectTrigger>
-                <SelectValue placeholder="All districts (Universal)" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ALL">All districts (Universal)</SelectItem>
-                <SelectItem value="DIPLOMATIC">Diplomatic & Luxury (Maitama, Asokoro, Guzape)</SelectItem>
-                <SelectItem value="COMMERCIAL">Commercial Hubs (Wuse II, CBD, Jabi, Utako)</SelectItem>
-                <SelectItem value="ESTATE">Gated Estates (Mabushi, Lifecamp, Lugbe, Lokogama)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
           <div className="grid grid-cols-3 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="price">Price (₦)</Label>
@@ -158,7 +143,7 @@ export function PlanForm() {
               id="durationHours"
               type="number"
               min={1}
-              placeholder="e.g. 3 for a 3-hour pass — blank uses the billing cycle"
+              placeholder="e.g. 3 for a 3 hour pass, blank uses the billing cycle"
               {...register("durationHours")}
             />
           </div>

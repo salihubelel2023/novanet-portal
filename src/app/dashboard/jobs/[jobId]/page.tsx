@@ -93,11 +93,11 @@ export default async function JobDetailPage({ params }: { params: Promise<{ jobI
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Phone</span>
-                    <span>{job.customer.phone ?? "—"}</span>
+                    <span>{job.customer.phone ?? "-"}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Address</span>
-                    <span className="text-right">{job.customer.address ?? "—"}</span>
+                    <span className="text-right">{job.customer.address ?? "-"}</span>
                   </div>
                 </>
               )}

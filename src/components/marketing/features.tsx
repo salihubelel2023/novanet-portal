@@ -4,7 +4,7 @@ const FEATURES = [
   {
     icon: Gauge,
     title: "Real subscription control",
-    description: "Residents and businesses upgrade, renew or pause plans instantly — no calling in.",
+    description: "Residents and businesses upgrade, renew or pause plans instantly, no calling in.",
   },
   {
     icon: QrCode,
@@ -23,8 +23,8 @@ const FEATURES = [
   },
   {
     icon: Satellite,
-    title: "Starlink-aware",
-    description: "Bring satellite backhaul into the same monitoring view as your terrestrial gear.",
+    title: "Dual-WAN Redundancy",
+    description: "Phase3 Telecom high speed metro fiber as primary backhaul, with automatic Starlink satellite failover.",
   },
   {
     icon: HeadphonesIcon,

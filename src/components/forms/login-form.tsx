@@ -35,9 +35,11 @@ export function LoginForm() {
 
     if (result?.error) {
       setServerError(
-        result.error === "ACCOUNT_SUSPENDED"
-          ? "This account has been suspended. Contact support for help."
-          : "Incorrect email or password."
+        result.code === "RATE_LIMITED"
+          ? "Too many login attempts. Please wait a few minutes and try again."
+          : result.code === "ACCOUNT_SUSPENDED" || result.error === "ACCOUNT_SUSPENDED"
+            ? "This account has been suspended. Contact support for help."
+            : "Incorrect email or password."
       );
       return;
     }

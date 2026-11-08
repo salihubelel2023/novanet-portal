@@ -5,7 +5,7 @@ export type RedeemableVoucher = {
   code: string;
   status: string;
   durationHours: number;
-  plan: { name: string };
+  plan: { name: string; deviceLimit: number | null };
 };
 
 export type VoucherClaimData = {

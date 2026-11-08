@@ -12,7 +12,7 @@ export type FlutterwaveInitializeParams = {
   email: string;
   name: string;
   phone?: string;
-  /** Amount in Naira — unlike Paystack, Flutterwave takes the major unit directly. */
+  /** Amount in Naira - unlike Paystack, Flutterwave takes the major unit directly. */
   amountNaira: number;
   txRef: string;
   redirectUrl: string;
@@ -101,7 +101,7 @@ export async function flutterwaveVerifyTransaction(
 /**
  * Flutterwave webhooks are authenticated with a static shared secret you
  * configure once in Dashboard → Settings → Webhooks (not a per-request
- * HMAC digest like Paystack) — Flutterwave echoes that exact string back
+ * HMAC digest like Paystack) - Flutterwave echoes that exact string back
  * in the `verif-hash` header, so this is a direct string comparison.
  * https://dev.to/flutterwaveeng/what-are-webhooks-and-how-do-you-implement-them-15j4
  */

@@ -3,8 +3,21 @@ import { redeemVoucherSchema } from "@/lib/validations/voucher";
 import { redeemVoucher, VoucherRedemptionError } from "@/lib/services/voucher";
 import { getOptionalUser } from "@/lib/rbac";
 import { notifyUser } from "@/lib/services/notification";
+import { getClientIp, rateLimit } from "@/lib/rate-limit";
+
+/** Redemption attempts allowed per IP per minute (code brute-force guard). */
+const REDEEM_LIMIT = 10;
+const REDEEM_WINDOW_MS = 60_000;
 
 export async function POST(req: Request) {
+  const limit = rateLimit(`redeem:${getClientIp(req)}`, REDEEM_LIMIT, REDEEM_WINDOW_MS);
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: "Too many attempts. Please wait a minute and try again." },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds) } }
+    );
+  }
+
   const body = await req.json().catch(() => null);
   const parsed = redeemVoucherSchema.safeParse(body);
   if (!parsed.success) {

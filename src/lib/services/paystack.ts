@@ -11,7 +11,7 @@ function getSecretKey(): string {
 
 export type PaystackInitializeParams = {
   email: string;
-  /** Amount in Naira (major unit) — this service converts to kobo for you. */
+  /** Amount in Naira (major unit) - this service converts to kobo for you. */
   amountNaira: number;
   reference: string;
   callbackUrl: string;
@@ -26,7 +26,7 @@ export type PaystackInitializeResult = {
 
 /**
  * Initialize a Paystack transaction. Paystack expects amounts in the
- * smallest currency subunit — for NGN that's kobo, so we multiply by 100.
+ * smallest currency subunit - for NGN that's kobo, so we multiply by 100.
  * https://paystack.com/docs/api/transaction/#initialize
  */
 export async function paystackInitializeTransaction(

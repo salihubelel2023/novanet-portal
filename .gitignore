@@ -41,3 +41,8 @@ next-env.d.ts
 .vscode/*
 !.vscode/extensions.json
 .idea
+
+# Local AI/agent assistant instruction files - never publish
+agent.md
+AGENTS.md
+CLAUDE.md

@@ -2,6 +2,8 @@ import "server-only";
 import { prisma } from "@/lib/prisma";
 import { createInvoiceForPayment } from "@/lib/services/invoice";
 import { notifyUser } from "@/lib/services/notification";
+import { sendSms } from "@/lib/services/termii";
+import { APP_URL } from "@/lib/constants";
 import { generateVoucherCode } from "@/lib/utils";
 import { durationHoursForPlan } from "@/lib/services/voucher";
 import type { BillingCycle } from "@prisma/client";
@@ -38,7 +40,7 @@ export type FulfillmentOutcome = "already_processed" | "fulfilled" | "not_found"
  * (activating a Subscription + issuing an Invoice, or minting a
  * self-service HotspotVoucher). Both the Paystack/Flutterwave webhooks
  * AND the synchronous browser callback page call this same function, so
- * whichever one lands first "wins" and the other is a no-op — payments
+ * whichever one lands first "wins" and the other is a no-op - payments
  * are never double-fulfilled.
  */
 export async function fulfillSuccessfulPayment(params: {
@@ -63,7 +65,9 @@ export async function fulfillSuccessfulPayment(params: {
     return "already_processed";
   }
 
-  if (payment.purpose === "SUBSCRIPTION" && payment.subscription) {
+  // Guest purchases have no account; everything below either handles that
+  // explicitly (voucher SMS delivery) or is impossible for guests.
+  if (payment.purpose === "SUBSCRIPTION" && payment.subscription && payment.userId) {
     const now = new Date();
     const endDate = addBillingCycle(now, payment.subscription.plan.billingCycle);
 
@@ -123,13 +127,27 @@ export async function fulfillSuccessfulPayment(params: {
           },
         });
 
-        await notifyUser({
-          userId: payment.userId,
-          title: "Voucher ready",
-          message: `Your ${plan.name} voucher (${code}) is ready to activate.`,
-          type: "VOUCHER",
-          link: "/dashboard/vouchers",
-        });
+        if (payment.userId) {
+          await notifyUser({
+            userId: payment.userId,
+            title: "Voucher ready",
+            message: `Your ${plan.name} voucher (${code}) is ready to activate.`,
+            type: "VOUCHER",
+            link: "/dashboard/vouchers",
+          });
+        } else if (payment.guestPhone) {
+          // Guest (no-account) purchase: deliver the code by SMS. A failure
+          // here must not fail fulfillment - the guest can still retrieve
+          // the code from their payment link.
+          try {
+            await sendSms(
+              payment.guestPhone,
+              `Your NovaNet ${plan.name} voucher code is ${code}. Valid for ${durationHoursForPlan(plan)}h. Redeem at ${APP_URL}/redeem`
+            );
+          } catch (err) {
+            console.error(`Guest voucher SMS delivery failed for ${payment.reference}:`, err);
+          }
+        }
       }
     }
   }

@@ -45,6 +45,11 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Invalid input" }, { status: 400 });
   }
 
+  const userPhone = await prisma.user.findUnique({
+    where: { id: gate.id },
+    select: { phone: true },
+  });
+
   if (parsed.data.phone) {
     const existing = await prisma.user.findFirst({
       where: { phone: parsed.data.phone, NOT: { id: gate.id } },
@@ -54,6 +59,18 @@ export async function PATCH(req: Request) {
     }
   }
 
-  const user = await prisma.user.update({ where: { id: gate.id }, data: parsed.data });
+  // A newly-set phone number is unverified until its OTP is confirmed.
+  const data: {
+    name?: string;
+    phone?: string;
+    address?: string;
+    businessName?: string;
+    phoneVerifiedAt?: Date | null;
+  } = { ...parsed.data };
+  if (parsed.data.phone && parsed.data.phone !== userPhone?.phone) {
+    data.phoneVerifiedAt = null;
+  }
+
+  const user = await prisma.user.update({ where: { id: gate.id }, data });
   return NextResponse.json({ user });
 }

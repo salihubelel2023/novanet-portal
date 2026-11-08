@@ -17,7 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { formatCurrency, formatCurrencyCompact, formatDate } from "@/lib/utils";
+import { formatCurrency, formatCurrencyCompact, formatDate, effectiveVoucherStatus } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Overview" };
 
@@ -186,6 +186,10 @@ async function HotspotOverview({ userId }: { userId: string }) {
     }),
   ]);
 
+  const voucherExpired = activeVoucher
+    ? effectiveVoucherStatus(activeVoucher.status, activeVoucher.expiresAt) === "EXPIRED"
+    : false;
+
   const timeLeftPct = activeVoucher?.expiresAt
     ? Math.max(
         0,
@@ -202,7 +206,7 @@ async function HotspotOverview({ userId }: { userId: string }) {
     <div>
       <PageHeader
         title="Your hotspot"
-        description="Manage your Wi-Fi access."
+        description="Manage your WiFi access."
         actions={
           <Button asChild>
             <Link href="/dashboard/vouchers">Buy a voucher</Link>
@@ -224,12 +228,12 @@ async function HotspotOverview({ userId }: { userId: string }) {
                     <p className="font-mono text-xs text-muted-foreground">{activeVoucher.code}</p>
                   </div>
                 </div>
-                <Badge variant="success">Active</Badge>
+                <Badge variant={voucherExpired ? "danger" : "success"}>{voucherExpired ? "Expired" : "Active"}</Badge>
               </div>
               <div className="mt-5">
                 <div className="mb-1.5 flex justify-between text-xs text-muted-foreground">
                   <span>Time remaining</span>
-                  <span>{activeVoucher.expiresAt ? formatDate(activeVoucher.expiresAt) : "—"}</span>
+                  <span>{activeVoucher.expiresAt ? formatDate(activeVoucher.expiresAt) : "-"}</span>
                 </div>
                 <Progress value={timeLeftPct} />
               </div>
@@ -264,8 +268,18 @@ async function HotspotOverview({ userId }: { userId: string }) {
                     <p className="font-mono text-sm">{v.code}</p>
                     <p className="text-xs text-muted-foreground">{v.plan.name}</p>
                   </div>
-                  <Badge variant={v.status === "ACTIVE" ? "success" : v.status === "EXPIRED" ? "danger" : "secondary"}>
-                    {v.status}
+                  <Badge
+                    variant={
+                      effectiveVoucherStatus(v.status, v.expiresAt) === "EXPIRED"
+                        ? "danger"
+                        : v.status === "ACTIVE"
+                          ? "success"
+                          : v.status === "EXPIRED"
+                            ? "danger"
+                            : "secondary"
+                    }
+                  >
+                    {effectiveVoucherStatus(v.status, v.expiresAt)}
                   </Badge>
                 </li>
               ))}

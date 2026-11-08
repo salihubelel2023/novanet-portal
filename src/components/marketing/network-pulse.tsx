@@ -1,8 +1,8 @@
 export function NetworkPulse({ className }: { className?: string }) {
   const nodes = [
-    { id: "estate", x: 96, y: 96, label: "Estate" },
+    { id: "estate", x: 96, y: 96, label: "Estates" },
     { id: "business", x: 544, y: 96, label: "Business" },
-    { id: "hotspot", x: 96, y: 324, label: "Hotspot" },
+    { id: "phase3", x: 96, y: 324, label: "Phase3 Fiber" },
     { id: "starlink", x: 544, y: 324, label: "Starlink" },
   ];
   const core = { x: 320, y: 210 };
@@ -14,7 +14,7 @@ export function NetworkPulse({ className }: { className?: string }) {
       viewBox="0 0 640 420"
       className={className}
       role="img"
-      aria-label="Diagram of NovaNet's network linking estates, businesses, hotspots and Starlink to the NovaNet core"
+      aria-label="Diagram of NovaNet's network linking estates, businesses, Phase3 Telecom primary fiber, and Starlink fallback to the NovaNet core"
     >
       <defs>
         <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
